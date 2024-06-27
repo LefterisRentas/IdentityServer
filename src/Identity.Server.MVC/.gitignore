@@ -1,0 +1,4 @@
+wwwroot/lib
+App_Data
+tempkey.jwk
+package-lock.json
