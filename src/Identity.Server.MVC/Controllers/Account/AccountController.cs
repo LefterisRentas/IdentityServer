@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Identity.Server.MVC.Models;
+using Identity.Server.MVC.Services.Abstractions;
 using IdentityModel;
 using IdentityServer4.Events;
 using IdentityServer4.Extensions;
@@ -16,6 +17,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace Identity.Server.MVC.Controllers.Account;
 
@@ -30,6 +32,8 @@ public class AccountController : Controller
     private readonly IClientStore _clientStore;
     private readonly IAuthenticationSchemeProvider _schemeProvider;
     private readonly IEventService _events;
+    private readonly IEmailService _emailService;
+    private readonly ILogger<AccountController> _logger;
 
     public AccountController(
         UserManager<ApplicationUser> userManager,
@@ -37,7 +41,9 @@ public class AccountController : Controller
         IIdentityServerInteractionService interaction,
         IClientStore clientStore,
         IAuthenticationSchemeProvider schemeProvider,
-        IEventService events)
+        IEventService events,
+        IEmailService emailService,
+        ILogger<AccountController> logger)
     {
         _userManager = userManager;
         _signInManager = signInManager;
@@ -45,6 +51,8 @@ public class AccountController : Controller
         _clientStore = clientStore;
         _schemeProvider = schemeProvider;
         _events = events;
+        _emailService = emailService;
+        _logger = logger;
     }
 
     /// <summary>
@@ -211,6 +219,45 @@ public class AccountController : Controller
     public IActionResult AccessDenied()
     {
         return View();
+    }
+    
+    [HttpGet]
+    [Route("confirm-email")]
+    public async Task<IActionResult> ConfirmEmail(string token, string email)
+    {
+        if (token == null || email == null)
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null)
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
+        var result = await _userManager.ConfirmEmailAsync(user, token);
+        if(!result.Succeeded)
+        {
+            return View("Error");
+        }
+        result = await _userManager.SetLockoutEnabledAsync(user, false);
+        if(result.Succeeded)
+        {
+            try
+            {
+                await _emailService.SendEmailAsync([user.Email], 
+                    null,
+                    null,
+                    "Account Confirmed",
+                    "Your account has been confirmed. If you did not create an account, please contact us.");
+            }
+            catch (Exception e)
+            {
+                _logger.LogCritical(e, "Failed to send email confirmation");
+            }
+        }
+        return View(result.Succeeded ? "ConfirmEmail" : "Error");
     }
 
 
