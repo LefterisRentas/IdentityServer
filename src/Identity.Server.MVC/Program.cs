@@ -12,11 +12,17 @@ using Microsoft.AspNetCore.Builder;
 var builder = WebApplication.CreateBuilder(args);
 builder.AddIdentityServerConfig();
 builder.AddDiConfig();
+
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+}
+
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
-    app.UseDatabaseErrorPage();
+    app.UseMigrationsEndPoint();
 }
 
 app.UseStaticFiles();
@@ -24,7 +30,7 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseIdentityServer();
 app.UseAuthorization();
-app.UseEndpoints(endpoints => endpoints.MapDefaultControllerRoute());
+app.MapDefaultControllerRoute();
 app.InitializeResourcesDatabase();
 var seed = app.Services.GetService<IConfiguration>().GetValue<bool>("ShouldSeedDatabase");
 if (seed)
@@ -32,7 +38,7 @@ if (seed)
     Log.Information("Seeding database...");
     var config = app.Services.GetRequiredService<IConfiguration>();
     var connectionString = config.GetConnectionString("DefaultConnection");
-    SeedData.EnsureSeedData(connectionString);
+    await SeedData.EnsureSeedData(connectionString);
     Log.Information("Done seeding database.");
 }
 

@@ -2,7 +2,6 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <UserSecretsId>e614b8c7-ba24-490d-83a2-e562c321077e</UserSecretsId>
-    <StartupObject></StartupObject>
     <RootNamespace>Identity.Server.MVC</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
@@ -21,4 +20,12 @@
   <ItemGroup>
     <Folder Include="Data\Migrations\" />
   </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckBuilt Include="wwwroot/css/site.scss" Set="Css" />
+    <UpToDateCheckBuilt Include="tailwind.config.js" Set="Css" />
+  </ItemGroup>
+
+  <Target Name="Tailwind" BeforeTargets="Build">
+    <Exec Command="npm run css:build"/>
+  </Target>
 </Project>
