@@ -22,8 +22,10 @@ public class SmtpEmailService : IEmailService
 
     public SmtpEmailService(IOptionsMonitor<SmtpEmailSettings> smtpEmailSettings, ILogger<SmtpEmailService> logger)
     {
-        _smtpEmailSettings = smtpEmailSettings.CurrentValue ?? throw new ArgumentNullException(nameof(smtpEmailSettings));
-        smtpEmailSettings.OnChange(settings => _smtpEmailSettings = settings ?? _smtpEmailSettings);
+        ArgumentNullException.ThrowIfNull(smtpEmailSettings);
+        _smtpEmailSettings = smtpEmailSettings.CurrentValue ?? throw new ArgumentNullException(nameof(smtpEmailSettings.CurrentValue));
+        smtpEmailSettings.OnChange(settings => _smtpEmailSettings = settings);
+    
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -112,7 +114,7 @@ public class SmtpEmailService : IEmailService
         {
             using (var client = new SmtpClient())
             {
-                await client.ConnectAsync(_smtpEmailSettings.Server, _smtpEmailSettings.Port, _smtpEmailSettings.UseSsl);
+                await client.ConnectAsync(_smtpEmailSettings.Server, _smtpEmailSettings.Port);
                 if(_smtpEmailSettings.UseCredentials)
                 {
                     await client.AuthenticateAsync(_smtpEmailSettings.Username, _smtpEmailSettings.Password);
