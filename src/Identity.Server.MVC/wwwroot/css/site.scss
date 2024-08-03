@@ -1,42 +1,33 @@
-﻿.body-container {
-    margin-top: 60px;
-    padding-bottom:40px;
-}
+﻿@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-.welcome-page {
-    li {
-        list-style: none;
-        padding: 4px;
+@layer components {
+    .body-container {
+        @apply mt-14 pb-10;
+    }
+
+    .welcome-page {
+        @apply bg-gray-800 text-gray-100 p-6 rounded-lg shadow-md;
+    }
+
+    .welcome-page h1 {
+        @apply text-3xl font-bold mb-4 flex items-center;
+    }
+
+    .welcome-page h1 img {
+        @apply w-12 h-12 mr-4;
+    }
+
+    .welcome-page ul {
+        @apply list-none;
+    }
+
+    .welcome-page ul li {
+        @apply my-2;
+    }
+
+    .welcome-page ul li a {
+        @apply text-blue-400 hover:underline;
     }
 }
-
-.logged-out-page {
-    iframe {
-        display: none;
-        width: 0;
-        height: 0;
-    }
-}
-
-.grants-page {
-    .card {
-        margin-top: 20px;
-        border-bottom: 1px solid #3C3E5F;
-
-        .card-title {
-            img {
-                width: 100px;
-                height: 100px;
-            }
-
-            font-size: 120%;
-            font-weight: bold;
-        }
-
-        label {
-            font-weight: bold;
-        }
-    }
-}
-
-

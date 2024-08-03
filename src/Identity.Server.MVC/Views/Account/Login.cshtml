@@ -1,98 +1,97 @@
-@using Identity.Server.MVC.Quickstart.Account
+@using Identity.Server.MVC.Controllers.Account
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@model Identity.Server.MVC.Quickstart.Account.LoginViewModel
+@model Identity.Server.MVC.Controllers.Account.LoginViewModel
 
-<div class="login-page">
-    <div class="lead">
-        <h1>Login</h1>
-        <p>Choose how to login</p>
+<div class="login-page p-6">
+    <div class="lead mb-6">
+        <h1 class="text-3xl font-bold text-white">Login</h1>
+        <p class="text-gray-300">Choose how to login</p>
     </div>
 
     <partial name="_ValidationSummary" />
 
-    <div class="row">
-
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         @if (Model.EnableLocalLogin)
         {
-            <div class="col-sm-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Local Account</h2>
-                    </div>
-
-                    <div class="card-body">
-                        <form asp-route="Login">
-                            <input type="hidden" asp-for="ReturnUrl" />
-
-                            <div class="form-group">
-                                <label asp-for="Username"></label>
-                                <input class="form-control" placeholder="Username" asp-for="Username" autofocus>
-                            </div>
-                            <div class="form-group">
-                                <label asp-for="Password"></label>
-                                <input type="password" class="form-control" placeholder="Password" asp-for="Password" autocomplete="off">
-                            </div>
-                            @if (Model.AllowRememberLogin)
-                            {
-                                <div class="form-group">
-                                    <div class="form-check">
-                                        <input class="form-check-input" asp-for="RememberLogin">
-                                        <label class="form-check-label" asp-for="RememberLogin">
-                                            Remember My Login
-                                        </label>
-                                    </div>
-                                </div>
-                            }
-
-                            <div>
-                                <p>The default users are alice/bob, password: Pass123$</p>
-                            </div>
-
-                            <button class="btn btn-primary" name="button" value="login">Login</button>
-                            <button class="btn btn-secondary" name="button" value="cancel">Cancel</button>
-                        </form>
-                    </div>
-                </div>
+        <div class="card bg-gray-800 text-white rounded-lg shadow-lg p-4">
+            <div class="card-header mb-4">
+                <h2 class="text-2xl font-semibold">Local Account</h2>
             </div>
+            <div class="card-body">
+                <form asp-route="Login">
+                    <input type="hidden" asp-for="ReturnUrl" />
+
+                    <div class="form-group mb-4">
+                        <label asp-for="Username" class="block text-sm font-medium text-gray-300"></label>
+                        <input class="form-control mt-1 block w-full rounded-md bg-gray-700 border-transparent focus:border-gray-500 focus:ring-0" placeholder="Username" asp-for="Username" autofocus>
+                    </div>
+                    <div class="form-group mb-4">
+                        <label asp-for="Password" class="block text-sm font-medium text-gray-300"></label>
+                        <input type="password" class="form-control mt-1 block w-full rounded-md bg-gray-700 border-transparent focus:border-gray-500 focus:ring-0" placeholder="Password" asp-for="Password" autocomplete="off">
+                    </div>
+                    @if (Model.AllowRememberLogin)
+                    {
+                    <div class="form-group mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" asp-for="RememberLogin">
+                            <label class="form-check-label text-sm text-gray-300" asp-for="RememberLogin">
+                                Remember My Login
+                            </label>
+                        </div>
+                    </div>
+                    }
+
+                    @if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
+                    {
+                        <div class="mb-4">
+                            <p class="text-gray-400">The default users are alice/bob, password: Pass123$</p>
+                        </div>
+                    }
+
+                    <div class="flex space-x-4">
+                        <button class="btn bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded" name="button" value="login">Login</button>
+                        <button class="btn bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded" name="button" value="cancel">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
         }
 
         @if (Model.VisibleExternalProviders.Any())
         {
-            <div class="col-sm-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h2>External Account</h2>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-inline">
-                            @foreach (var provider in Model.VisibleExternalProviders)
-                            {
-                            var iconClass = ExternalProviderIcons.ProviderIcons.ContainsKey(provider.DisplayName)
-                            ? ExternalProviderIcons.ProviderIcons[provider.DisplayName]
-                            : "fas fa-sign-in-alt"; // Default icon if no specific icon is found
-
-                            <li class="list-inline-item">
-                                <a class="btn btn-secondary"
-                                   asp-controller="External"
-                                   asp-action="Challenge"
-                                   asp-route-scheme="@provider.AuthenticationScheme"
-                                   asp-route-returnUrl="@Model.ReturnUrl">
-                                    <i class="@iconClass"></i> @provider.DisplayName
-                                </a>
-                            </li>
-                            }
-                        </ul>
-                    </div>
-                </div>
+        <div class="card bg-gray-800 text-white rounded-lg shadow-lg p-4">
+            <div class="card-header mb-4">
+                <h2 class="text-2xl font-semibold">External Account</h2>
             </div>
+            <div class="card-body">
+                <ul class="list-inline space-y-4">
+                    @foreach (var provider in Model.VisibleExternalProviders)
+                    {
+                    var iconClass = ExternalProviderIcons.ProviderIcons.ContainsKey(provider.DisplayName)
+                    ? ExternalProviderIcons.ProviderIcons[provider.DisplayName]
+                    : "fas fa-sign-in-alt"; // Default icon if no specific icon is found
+
+                    <li class="list-inline-item">
+                        <a class="btn bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded inline-flex items-center"
+                           asp-controller="External"
+                           asp-action="Challenge"
+                           asp-route-scheme="@provider.AuthenticationScheme"
+                           asp-route-returnUrl="@Model.ReturnUrl">
+                            <i class="@iconClass mr-2"></i> @provider.DisplayName
+                        </a>
+                    </li>
+                    }
+                </ul>
+            </div>
+        </div>
         }
 
         @if (!Model.EnableLocalLogin && !Model.VisibleExternalProviders.Any())
         {
-            <div class="alert alert-warning">
-                <strong>Invalid login request</strong>
-                There are no login schemes configured for this request.
-            </div>
+        <div class="alert alert-warning">
+            <strong>Invalid login request</strong>
+            There are no login schemes configured for this request.
+        </div>
         }
     </div>
 </div>

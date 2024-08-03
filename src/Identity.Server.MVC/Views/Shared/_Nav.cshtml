@@ -1,5 +1,8 @@
-﻿@using IdentityServer4.Extensions
+﻿@using Identity.Server.MVC.Options
+@using IdentityServer4.Extensions
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.Extensions.Options
+@inject IOptionsSnapshot<OrganizationOptions?> OrganizationOptions
 
 @{
     string name = null;
@@ -7,39 +10,35 @@
     {
         name = Context.User?.GetDisplayName();
     }
+    string organizationName = OrganizationOptions?.Value?.Name;
 }
 <head>
     <link rel="stylesheet" href="~/css/site.css">
 </head>
 <div class="nav-page">
-    <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
-        <a href="~/" class="navbar-brand">
-            <img src="~/icon.png" class="icon-banner" alt="Icon" style="width: 30px; height: 30px; margin-right: 10px;">
-            Identity Server
-        </a>
-
-        <div class="collapse navbar-collapse">
-            @if (!string.IsNullOrWhiteSpace(name))
-            {
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        @name <b class="caret"></b>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
-                        <a class="dropdown-item" asp-action="Logout" asp-controller="Account">Logout</a>
+    <nav class="bg-black text-white shadow-md py-4">
+        <div class="container mx-auto flex items-center justify-between">
+            <a href="~/" class="flex items-center text-white">
+                <img src="~/icon.png" alt="Icon" class="w-8 h-8 mr-2">
+                <span class="font-bold text-xl">@organizationName</span>
+            </a>
+            <div class="flex items-center space-x-4">
+                @if (!string.IsNullOrWhiteSpace(name))
+                {
+                    <div class="relative">
+                        <button class="text-white flex items-center focus:outline-none" id="userDropdown" aria-haspopup="true" aria-expanded="false">
+                            @name <svg class="w-4 h-4 ml-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                        <div id="dropdownMenu" class="absolute right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg py-1 hidden">
+                            <a href="@Url.Action("Logout", "Account")" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600">Logout</a>
+                        </div>
                     </div>
-                </li>
-            </ul>
-            }
-            else
-            {
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="btn btn-secondary" asp-controller="Account" asp-action="Login">Login</a>
-                </li>
-            </ul>
-            }
+                }
+                else
+                {
+                    <a href="@Url.Action("Login", "Account")" class="bg-gray-700 text-white py-2 px-4 rounded-md hover:bg-gray-600">Login</a>
+                }
+            </div>
         </div>
     </nav>
 </div>

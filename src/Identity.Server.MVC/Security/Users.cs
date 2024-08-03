@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using IdentityModel;
 using Identity.Server.MVC.Data;
 using Identity.Server.MVC.Models;
@@ -13,7 +14,7 @@ namespace Identity.Server.MVC.Security;
 
 internal static class Users
 {
-    internal static void SeedUsers(string connectionString)
+    internal static async Task SeedUsersAndRoles(string connectionString)
     {
         var services = new ServiceCollection();
         services.AddLogging();
@@ -33,71 +34,63 @@ internal static class Users
                 {
                     context.Database.Migrate();
                 }
-
+                
+                var roleMgr = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                await SeedRoles(roleMgr);
                 var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-                var alice = userMgr.FindByNameAsync("alice").Result;
-                if (alice == null)
+                foreach (var testUser in TestUsers.Users)
                 {
-                    alice = new ApplicationUser
+                    var user = await userMgr.FindByNameAsync(testUser.Username);
+                    if (user == null)
                     {
-                        UserName = "alice",
-                        Email = "AliceSmith@email.com",
-                        EmailConfirmed = true,
-                    };
-                    var result = userMgr.CreateAsync(alice, "Pass123$").Result;
-                    if (!result.Succeeded)
-                    {
-                        throw new Exception(result.Errors.First().Description);
-                    }
+                        user = new ApplicationUser
+                        {
+                            UserName = testUser.Username,
+                            Email = testUser.Claims.First(c => c.Type == JwtClaimTypes.Email).Value,
+                            EmailConfirmed = true,
+                        };
 
-                    result = userMgr.AddClaimsAsync(alice, new[]{
-                        new Claim(JwtClaimTypes.Name, "Alice Smith"),
-                        new Claim(JwtClaimTypes.GivenName, "Alice"),
-                        new Claim(JwtClaimTypes.FamilyName, "Smith"),
-                        new Claim(JwtClaimTypes.WebSite, "http://alice.com"),
-                    }).Result;
-                    if (!result.Succeeded)
-                    {
-                        throw new Exception(result.Errors.First().Description);
-                    }
-                    Log.Debug("alice created");
-                }
-                else
-                {
-                    Log.Debug("alice already exists");
-                }
+                        var result = await userMgr.CreateAsync(user, "Pass123$");
+                        if (!result.Succeeded)
+                        {
+                            throw new Exception(result.Errors.First().Description);
+                        }
 
-                var bob = userMgr.FindByNameAsync("bob").Result;
-                if (bob == null)
-                {
-                    bob = new ApplicationUser
-                    {
-                        UserName = "bob",
-                        Email = "BobSmith@email.com",
-                        EmailConfirmed = true
-                    };
-                    var result = userMgr.CreateAsync(bob, "Pass123$").Result;
-                    if (!result.Succeeded)
-                    {
-                        throw new Exception(result.Errors.First().Description);
-                    }
+                        result = await userMgr.AddClaimsAsync(user, new Claim[]
+                        {
+                            new(JwtClaimTypes.Name, testUser.Username),
+                            new(JwtClaimTypes.GivenName, testUser.Username),
+                            new(JwtClaimTypes.FamilyName, testUser.Username),
+                            new(JwtClaimTypes.Email, testUser.Claims.First(c => c.Type == JwtClaimTypes.Email).Value),
+                            new(JwtClaimTypes.EmailVerified, "true", ClaimValueTypes.Boolean),
+                            new(JwtClaimTypes.WebSite, "http://alice.com"),
+                        });
+                        if (!result.Succeeded)
+                        {
+                            throw new Exception(result.Errors.First().Description);
+                        }
 
-                    result = userMgr.AddClaimsAsync(bob, new[]{
-                        new Claim(JwtClaimTypes.Name, "Bob Smith"),
-                        new Claim(JwtClaimTypes.GivenName, "Bob"),
-                        new Claim(JwtClaimTypes.FamilyName, "Smith"),
-                        new Claim(JwtClaimTypes.WebSite, "http://bob.com"),
-                        new Claim("location", "somewhere")
-                    }).Result;
-                    if (!result.Succeeded)
-                    {
-                        throw new Exception(result.Errors.First().Description);
+                        Log.Debug("User created: {username}", testUser.Username);
                     }
-                    Log.Debug("bob created");
+                    else
+                    {
+                        Log.Debug("User already exists: {username}", testUser.Username);
+                    }
                 }
-                else
+            }
+        }
+    }
+    
+    internal static async Task SeedRoles(RoleManager<IdentityRole> roleMgr)
+    {
+        foreach (var role in Roles.GetRoles())
+        {
+            if (!await roleMgr.RoleExistsAsync(role.Name))
+            {
+                var result = await roleMgr.CreateAsync(role);
+                if (!result.Succeeded)
                 {
-                    Log.Debug("bob already exists");
+                    throw new Exception(result.Errors.First().Description);
                 }
             }
         }

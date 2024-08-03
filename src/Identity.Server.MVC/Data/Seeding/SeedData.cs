@@ -3,6 +3,7 @@
 
 
 using System.Linq;
+using System.Threading.Tasks;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
 using Microsoft.AspNetCore.Builder;
@@ -14,9 +15,9 @@ namespace Identity.Server.MVC.Data.Seeding;
 
 public static class SeedData
 {
-    public static void EnsureSeedData(string connectionString)
+    public static async Task EnsureSeedData(string connectionString)
     {
-        Users.SeedUsers(connectionString);
+        await Users.SeedUsersAndRoles(connectionString);
     }
 
     internal static void InitializeResourcesDatabase(this IApplicationBuilder app)
