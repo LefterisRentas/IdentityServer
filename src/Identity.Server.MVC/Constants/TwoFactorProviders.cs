@@ -2,8 +2,6 @@
 
 public enum TwoFactorProviders
 {
-    Authenticator,
     Email,
-    Phone,
-    SecurityKey
+    Phone
 }

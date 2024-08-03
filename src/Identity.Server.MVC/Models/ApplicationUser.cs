@@ -1,4 +1,5 @@
-﻿using Identity.Server.MVC.Constants;
+﻿using System.ComponentModel.DataAnnotations;
+using Identity.Server.MVC.Constants;
 using Microsoft.AspNetCore.Identity;
 
 namespace Identity.Server.MVC.Models;

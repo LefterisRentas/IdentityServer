@@ -3,7 +3,9 @@
 
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Identity.Server.MVC.Models;
 using Identity.Server.MVC.Services.Abstractions;
@@ -33,6 +35,7 @@ public class AccountController : Controller
     private readonly IAuthenticationSchemeProvider _schemeProvider;
     private readonly IEventService _events;
     private readonly IEmailService _emailService;
+    private readonly ISmsService _smsService;
     private readonly ILogger<AccountController> _logger;
 
     public AccountController(
@@ -43,6 +46,7 @@ public class AccountController : Controller
         IAuthenticationSchemeProvider schemeProvider,
         IEventService events,
         IEmailService emailService,
+        ISmsService smsService,
         ILogger<AccountController> logger)
     {
         _userManager = userManager;
@@ -52,6 +56,7 @@ public class AccountController : Controller
         _schemeProvider = schemeProvider;
         _events = events;
         _emailService = emailService;
+        _smsService = smsService;
         _logger = logger;
     }
 
@@ -114,48 +119,89 @@ public class AccountController : Controller
 
         if (ModelState.IsValid)
         {
-            var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberLogin, lockoutOnFailure: true);
-            if (result.Succeeded)
+            var user = await _userManager.FindByNameAsync(model.Username);
+            if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
             {
-                var user = await _userManager.FindByNameAsync(model.Username);
-                await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName, clientId: context?.Client.ClientId));
-
-                if (context != null)
+                if (await _userManager.GetTwoFactorEnabledAsync(user))
                 {
-                    if (context.IsNativeClient())
+                    var providers = await _userManager.GetValidTwoFactorProvidersAsync(user);
+                    if (providers.Contains("Email") || providers.Contains("Phone"))
                     {
-                        // The client is native, so this change in how to
-                        // return the response is for better UX for the end user.
-                        return this.LoadingPage("Redirect", model.ReturnUrl);
+                        await HttpContext.SignInAsync(IdentityConstants.TwoFactorUserIdScheme,
+                            new ClaimsPrincipal(new ClaimsIdentity(await BuildClaims(model),
+                                IdentityConstants.TwoFactorUserIdScheme)));
+                        return RedirectToAction("Index", "TwoFactor", new { ReturnUrl = model.ReturnUrl, RememberMe = model.RememberLogin });
                     }
+                }
+            }
 
-                    // we can trust model.ReturnUrl since GetAuthorizationContextAsync returned non-null
-                    return Redirect(model.ReturnUrl);
-                }
-
-                // request for a local page
-                if (Url.IsLocalUrl(model.ReturnUrl))
-                {
-                    return Redirect(model.ReturnUrl);
-                }
-                else if (string.IsNullOrEmpty(model.ReturnUrl))
-                {
-                    return Redirect("~/");
-                }
-                else
-                {
-                    // user might have clicked on a malicious link - should be logged
-                    throw new Exception("invalid return URL");
-                }
+            var loadingPage = await DoLogin(model, context);
+            if (loadingPage != null)
+            {
+                return loadingPage;
             }
 
             await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid credentials", clientId: context?.Client.ClientId));
             ModelState.AddModelError(string.Empty, AccountOptions.InvalidCredentialsErrorMessage);
         }
 
-        // something went wrong, show form with error
         var vm = await BuildLoginViewModelAsync(model);
         return View(vm);
+    }
+
+    private async Task<IEnumerable<Claim>> BuildClaims(LoginInputModel model)
+    {
+        var user = await _userManager.FindByNameAsync(model.Username);
+        var claims = new List<Claim>
+        {
+            new Claim("rememberme", model.RememberLogin.ToString()),
+            new Claim("returnUrl", model.ReturnUrl ?? string.Empty),
+            new Claim("userName", user.UserName),
+            new Claim(JwtClaimTypes.Subject, user!.Id),
+            new Claim(ClaimTypes.Name, user!.Id)
+        };
+        return claims;
+    }
+
+    private async Task<IActionResult> DoLogin(LoginInputModel model, AuthorizationRequest context)
+    {
+        ApplicationUser user;
+        IActionResult loadingPage;
+        var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberLogin, lockoutOnFailure: true);
+        if (result.Succeeded)
+        {
+            user = await _userManager.FindByNameAsync(model.Username);
+            await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName, clientId: context?.Client.ClientId));
+
+            if (context != null)
+            {
+                if (context.IsNativeClient())
+                {
+                    loadingPage = this.LoadingPage("Redirect", model.ReturnUrl);
+                    return this.LoadingPage("Redirect", model.ReturnUrl);
+                }
+
+                loadingPage = Redirect(model.ReturnUrl);
+                return Redirect(model.ReturnUrl);
+            }
+
+            if (Url.IsLocalUrl(model.ReturnUrl))
+            {
+                loadingPage = Redirect(model.ReturnUrl);
+                return Redirect(model.ReturnUrl);
+            }
+            else if (string.IsNullOrEmpty(model.ReturnUrl))
+            {
+                loadingPage = Redirect("~/");
+                return Redirect("~/");
+            }
+            else
+            {
+                throw new Exception("invalid return URL");
+            }
+        }
+
+        return null;
     }
 
 
@@ -190,7 +236,7 @@ public class AccountController : Controller
         // build a model so the logged out page knows what to display
         var vm = await BuildLoggedOutViewModelAsync(model.LogoutId);
 
-        if (User?.Identity.IsAuthenticated == true)
+        if (User?.Identity?.IsAuthenticated == true)
         {
             // delete local authentication cookie
             await _signInManager.SignOutAsync();
@@ -246,7 +292,7 @@ public class AccountController : Controller
         {
             try
             {
-                await _emailService.SendEmailAsync([user.Email], 
+                await _emailService.SendEmailAsync([user.Email],
                     null,
                     null,
                     "Account Confirmed",
@@ -334,7 +380,7 @@ public class AccountController : Controller
     {
         var vm = new LogoutViewModel { LogoutId = logoutId, ShowLogoutPrompt = AccountOptions.ShowLogoutPrompt };
 
-        if (User?.Identity.IsAuthenticated != true)
+        if (User?.Identity?.IsAuthenticated != true)
         {
             // if the user is not authenticated, then just show logged out page
             vm.ShowLogoutPrompt = false;

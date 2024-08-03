@@ -18,7 +18,7 @@ public class MockEmailService : IEmailService
     
     public Task<EmailCode> SendEmailAsync(string[] recipients, string? senderName, string? senderAddress, string subject, string body, string[]? bccRecipients = null, EmailAttachment[] attachments = null)
     {
-        _logger.LogInformation("Email sent to {Recipients} from {Sender} with subject {Subject} and message {Message}", recipients, senderName + senderAddress, subject, recipients);
+        _logger.LogInformation("Email sent to {Recipients} from {Sender} with subject {Subject} and message {Message}", recipients, senderName + senderAddress, subject, body);
         return Task.FromResult(EmailSuccessCode.Success);
     }
 }

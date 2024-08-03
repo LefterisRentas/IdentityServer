@@ -1,4 +1,6 @@
 ﻿using Identity.Server.MVC.Events.EventSinks;
+using Identity.Server.MVC.Services.Abstractions;
+using Identity.Server.MVC.Services.Mock;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.Routing;
@@ -12,6 +14,8 @@ public static class DiConfig
         builder.Services.AddHttpContextAccessor();
         builder.Services.AddSingleton<IUrlHelperFactory, UrlHelperFactory>();
         builder.Services.AddTransient<IEventSink, UserCreationEventSink>();
+        builder.Services.AddTransient<IEmailService, MockEmailService>();
+        builder.Services.AddTransient<ISmsService, MockSmsService>();
         return builder;
     }
 }
