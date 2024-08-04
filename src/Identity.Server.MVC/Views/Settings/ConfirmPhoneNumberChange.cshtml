@@ -1,0 +1,21 @@
+﻿@model Identity.Server.MVC.Models.Account.Settings.PhoneNumberChangeViewModel
+
+<div class="confirm-phone-number-change-page p-6">
+    <div class="lead mb-6">
+        <h1 class="text-3xl font-bold text-white">Confirm Phone Number Change</h1>
+        <p class="text-gray-300">Enter the confirmation code sent to your new phone number.</p>
+    </div>
+
+    <partial name="_ValidationSummary" />
+
+    <form asp-action="ConfirmPhoneNumberChange" method="post">
+        <input type="hidden" asp-for="NewPhoneNumber" />
+        <div class="form-group mb-4">
+            <label asp-for="Token" class="block text-sm font-medium text-gray-300"></label>
+            <input asp-for="Token" class="form-control mt-1 block w-full rounded-md bg-gray-700 border-transparent focus:border-gray-500 focus:ring-0" autofocus />
+        </div>
+        <div class="flex space-x-4">
+            <button type="submit" class="btn bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">Confirm Phone Number Change</button>
+        </div>
+    </form>
+</div>
