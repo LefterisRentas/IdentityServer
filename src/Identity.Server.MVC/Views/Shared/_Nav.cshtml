@@ -1,6 +1,5 @@
 ﻿@using Identity.Server.MVC.Options
 @using IdentityServer4.Extensions
-@using Microsoft.AspNetCore.Mvc.TagHelpers
 @using Microsoft.Extensions.Options
 @inject IOptionsSnapshot<OrganizationOptions?> OrganizationOptions
 
@@ -30,6 +29,7 @@
                             @name <svg class="w-4 h-4 ml-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                         </button>
                         <div id="dropdownMenu" class="absolute right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg py-1 hidden">
+                            <a href="@Url.Action("Index", "Settings")" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600">Settings</a>
                             <a href="@Url.Action("Logout", "Account")" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600">Logout</a>
                         </div>
                     </div>
