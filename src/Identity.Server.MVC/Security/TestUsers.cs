@@ -3,40 +3,52 @@
 
 
 using System.Collections.Generic;
-using System.Security.Claims;
+using Identity.Server.MVC.Models;
 using IdentityModel;
-using IdentityServer4.Test;
+using Microsoft.AspNetCore.Identity;
 
 namespace Identity.Server.MVC.Security;
 
 public class TestUsers
 {
-    public static List<TestUser> Users = new()
-    {
-        new TestUser{SubjectId = "818727", Username = "alice", Password = "alice",
-            Claims =
+    public static List<ApplicationUser> Users =
+    [
+        new ApplicationUser
+        {
+            Id = "818727", UserName = "alice", PasswordHash = "alice",
+            Claims = new List<IdentityUserClaim<string>>
             {
-                new Claim(JwtClaimTypes.Name, "Alice Smith"),
-                new Claim(JwtClaimTypes.GivenName, "Alice"),
-                new Claim(JwtClaimTypes.FamilyName, "Smith"),
-                new Claim(JwtClaimTypes.Email, "AliceSmith@email.com"),
-                new Claim(JwtClaimTypes.EmailVerified, "true", ClaimValueTypes.Boolean),
-                new Claim(JwtClaimTypes.WebSite, "http://alice.com"),
-                new Claim(JwtClaimTypes.Address, @"{ 'street_address': 'One Hacker Way', 'locality': 'Heidelberg', 'postal_code': 69118, 'country': 'Germany' }", IdentityServer4.IdentityServerConstants.ClaimValueTypes.Json)
-            }
+                new IdentityUserClaim<string> { ClaimType = JwtClaimTypes.Name, ClaimValue = "Alice Smith", UserId = "818727" },
+                new IdentityUserClaim<string> { ClaimType = JwtClaimTypes.GivenName, ClaimValue = "Alice", UserId = "818727" },
+                new IdentityUserClaim<string> { ClaimType = JwtClaimTypes.FamilyName, ClaimValue = "Smith", UserId = "818727" },
+                new IdentityUserClaim<string> { ClaimType = JwtClaimTypes.Email, ClaimValue = "AliceSmith@email.com", UserId = "818727" },
+                new IdentityUserClaim<string> { ClaimType = JwtClaimTypes.EmailVerified, ClaimValue = "true", UserId = "818727" },
+                new IdentityUserClaim<string> { ClaimType = JwtClaimTypes.WebSite, ClaimValue = "http://alice.com", UserId = "818727" },
+                new IdentityUserClaim<string>
+                {
+                    ClaimType = JwtClaimTypes.Address, ClaimValue = @"{ 'street_address': 'One Hacker Way', 'locality': 'Heidelberg', 'postal_code': 69118, 'country': 'Germany' }"
+                    , UserId = "818727"},
+            },
+            TwoFactorEnabled = true
         },
-        new TestUser{SubjectId = "88421113", Username = "bob", Password = "bob",
-            Claims =
+
+        new ApplicationUser
+        {
+            Id = "88421113", UserName = "bob", PasswordHash = "bob",
+            Claims = new List<IdentityUserClaim<string>>
             {
-                new Claim(JwtClaimTypes.Name, "Bob Smith"),
-                new Claim(JwtClaimTypes.GivenName, "Bob"),
-                new Claim(JwtClaimTypes.FamilyName, "Smith"),
-                new Claim(JwtClaimTypes.Email, "BobSmith@email.com"),
-                new Claim(JwtClaimTypes.EmailVerified, "true", ClaimValueTypes.Boolean),
-                new Claim(JwtClaimTypes.WebSite, "http://bob.com"),
-                new Claim(JwtClaimTypes.Address, @"{ 'street_address': 'One Hacker Way', 'locality': 'Heidelberg', 'postal_code': 69118, 'country': 'Germany' }", IdentityServer4.IdentityServerConstants.ClaimValueTypes.Json),
-                new Claim("location", "somewhere")
+                new IdentityUserClaim<string> { ClaimType = JwtClaimTypes.Name, ClaimValue = "Bob Smith", UserId = "818727" },
+                new IdentityUserClaim<string> { ClaimType = JwtClaimTypes.GivenName, ClaimValue = "Bob", UserId = "818727" },
+                new IdentityUserClaim<string> { ClaimType = JwtClaimTypes.FamilyName, ClaimValue = "Smith", UserId = "818727" },
+                new IdentityUserClaim<string> { ClaimType = JwtClaimTypes.Email, ClaimValue = "BobSmith@email.com", UserId = "818727" },
+                new IdentityUserClaim<string> { ClaimType = JwtClaimTypes.EmailVerified, ClaimValue = "true", UserId = "818727" },
+                new IdentityUserClaim<string> { ClaimType = JwtClaimTypes.WebSite, ClaimValue = "http://bob.com", UserId = "818727" },
+                new IdentityUserClaim<string>
+                {
+                    ClaimType = JwtClaimTypes.Address, ClaimValue = @"{ 'street_address': 'One Hacker Way', 'locality': 'Heidelberg', 'postal_code': 69118, 'country': 'Germany' }"
+                    , UserId = "818727"},
+                new IdentityUserClaim<string> { ClaimType = "location", ClaimValue = "somewhere", UserId = "818727" },
             }
         }
-    };
+    ];
 }

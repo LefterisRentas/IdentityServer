@@ -40,14 +40,17 @@ internal static class Users
                 var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
                 foreach (var testUser in TestUsers.Users)
                 {
-                    var user = await userMgr.FindByNameAsync(testUser.Username);
+                    var user = await userMgr.FindByNameAsync(testUser.UserName ?? throw new InvalidOperationException("User name cannot be null at seed time"));
                     if (user == null)
                     {
                         user = new ApplicationUser
                         {
-                            UserName = testUser.Username,
-                            Email = testUser.Claims.First(c => c.Type == JwtClaimTypes.Email).Value,
+                            UserName = testUser.UserName,
+                            Email = testUser.Claims.First(c => c.ToClaim().Type == JwtClaimTypes.Email).ToClaim().Value,
                             EmailConfirmed = true,
+                            TwoFactorEnabled = testUser.TwoFactorEnabled,
+                            Claims = testUser.Claims,
+                            Id = testUser.Id
                         };
 
                         var result = await userMgr.CreateAsync(user, "Pass123$");
@@ -58,10 +61,10 @@ internal static class Users
 
                         result = await userMgr.AddClaimsAsync(user, new Claim[]
                         {
-                            new(JwtClaimTypes.Name, testUser.Username),
-                            new(JwtClaimTypes.GivenName, testUser.Username),
-                            new(JwtClaimTypes.FamilyName, testUser.Username),
-                            new(JwtClaimTypes.Email, testUser.Claims.First(c => c.Type == JwtClaimTypes.Email).Value),
+                            new(JwtClaimTypes.Name, testUser.UserName),
+                            new(JwtClaimTypes.GivenName, testUser.UserName),
+                            new(JwtClaimTypes.FamilyName, testUser.UserName),
+                            new(JwtClaimTypes.Email, testUser.Claims.First(c => c.ToClaim().Type == JwtClaimTypes.Email).ToClaim().Value),
                             new(JwtClaimTypes.EmailVerified, "true", ClaimValueTypes.Boolean),
                             new(JwtClaimTypes.WebSite, "http://alice.com"),
                         });
@@ -70,11 +73,11 @@ internal static class Users
                             throw new Exception(result.Errors.First().Description);
                         }
 
-                        Log.Debug("User created: {username}", testUser.Username);
+                        Log.Debug("User created: {username}", testUser.UserName);
                     }
                     else
                     {
-                        Log.Debug("User already exists: {username}", testUser.Username);
+                        Log.Debug("User already exists: {username}", testUser.UserName);
                     }
                 }
             }

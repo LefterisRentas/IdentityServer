@@ -1,6 +1,6 @@
 ﻿namespace Identity.Server.MVC.Constants;
 
-public class BasicClaimTypes
+public class ExtendedClaimTypes
 {
     public const string Admin = "admin";
     public const string DeviceId = "device_id";
@@ -8,5 +8,4 @@ public class BasicClaimTypes
     public const string IPAddress = "ip_address";
     public const string PasswordExpirationDate = "password_expiration_date";
     public const string PasswordExpirationPolicy = "password_expiration_policy";
-    public const string System = "system";
 }

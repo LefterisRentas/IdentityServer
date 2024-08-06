@@ -9,12 +9,11 @@ public static class ApiScopes
 {
     public static readonly ICollection<string> UserClaims = new[]
     {
-        BasicClaimTypes.Admin,
-        BasicClaimTypes.DeviceId,
-        BasicClaimTypes.IPAddress,
-        BasicClaimTypes.PasswordExpirationDate,
-        BasicClaimTypes.PasswordExpirationPolicy,
-        BasicClaimTypes.System,
+        ExtendedClaimTypes.Admin,
+        ExtendedClaimTypes.DeviceId,
+        ExtendedClaimTypes.IPAddress,
+        ExtendedClaimTypes.PasswordExpirationDate,
+        ExtendedClaimTypes.PasswordExpirationPolicy,
         JwtClaimTypes.Email,
         JwtClaimTypes.EmailVerified,
         JwtClaimTypes.FamilyName,

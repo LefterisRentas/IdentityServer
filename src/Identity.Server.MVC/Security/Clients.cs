@@ -62,7 +62,7 @@ public static class Clients
                 AlwaysSendClientClaims = true,
                 AllowAccessTokensViaBrowser = true,
                 RequireConsent = true,
-                Claims = { new ClientClaim(BasicClaimTypes.System, "true") }
+                Claims = {}
             },
 
             new Client
