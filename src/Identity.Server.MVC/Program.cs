@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using Identity.Server.Extended.Configuration;
+using Identity.Server.Extended.Endpoints;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -12,6 +14,7 @@ using Microsoft.AspNetCore.Builder;
 var builder = WebApplication.CreateBuilder(args);
 builder.AddIdentityServerConfig();
 builder.AddDiConfig();
+builder.AddExtendedIdentityServerDiConfig();
 
 if (builder.Environment.IsDevelopment())
 {
@@ -42,5 +45,6 @@ if (seed)
     Log.Information("Done seeding database.");
 }
 
+app.MapClients();
 Log.Information("Starting host...");
 app.Run();

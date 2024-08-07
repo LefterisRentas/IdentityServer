@@ -2,8 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Identity.Server.MVC.Constants.EmailCodes;
-using Identity.Server.MVC.Constants.ErrorCodes;
+using Identity.Server.Extended.Constants.EmailCodes;
 using Identity.Server.MVC.Models.Email;
 using Identity.Server.MVC.Options;
 using Identity.Server.MVC.Services.Abstractions;

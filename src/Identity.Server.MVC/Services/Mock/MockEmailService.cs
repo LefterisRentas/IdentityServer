@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Identity.Server.MVC.Constants.EmailCodes;
+using Identity.Server.Extended.Constants.EmailCodes;
 using Identity.Server.MVC.Models.Email;
 using Identity.Server.MVC.Services.Abstractions;
 using Microsoft.Extensions.Logging;

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Identity.Server.MVC.Services.Abstractions;
 using System.Threading.Tasks;
-using Identity.Server.MVC.Constants;
+using Identity.Server.Extended.Constants;
 using Identity.Server.MVC.Models;
 using Identity.Server.MVC.Views.TwoFactor;
 using IdentityModel;

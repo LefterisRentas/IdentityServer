@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Identity.Server.MVC.Constants.EmailCodes;
+using Identity.Server.Extended.Constants.EmailCodes;
 using Identity.Server.MVC.Models.Email;
 
 namespace Identity.Server.MVC.Services.Abstractions;

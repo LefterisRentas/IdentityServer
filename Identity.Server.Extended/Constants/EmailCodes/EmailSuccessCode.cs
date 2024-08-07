@@ -1,4 +1,4 @@
-﻿namespace Identity.Server.MVC.Constants.EmailCodes;
+﻿namespace Identity.Server.Extended.Constants.EmailCodes;
 
 public class EmailSuccessCode : EmailCode
 {

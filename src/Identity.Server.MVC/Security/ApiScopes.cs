@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using Identity.Server.Extended.Constants;
 using IdentityModel;
-using Identity.Server.MVC.Constants;
 using IdentityServer4.Models;
 
 namespace Identity.Server.MVC.Security;
@@ -9,11 +9,8 @@ public static class ApiScopes
 {
     public static readonly ICollection<string> UserClaims = new[]
     {
-        ExtendedClaimTypes.Admin,
         ExtendedClaimTypes.DeviceId,
         ExtendedClaimTypes.IPAddress,
-        ExtendedClaimTypes.PasswordExpirationDate,
-        ExtendedClaimTypes.PasswordExpirationPolicy,
         JwtClaimTypes.Email,
         JwtClaimTypes.EmailVerified,
         JwtClaimTypes.FamilyName,

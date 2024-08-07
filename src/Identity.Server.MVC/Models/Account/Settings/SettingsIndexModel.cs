@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Identity.Server.MVC.Constants;
+using Identity.Server.Extended.Constants;
 
 namespace Identity.Server.MVC.Models.Account.Settings;
 
