@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Identity.Server.Extended.Security;
 using IdentityModel;
 using Identity.Server.MVC.Data;
 using Identity.Server.MVC.Models;

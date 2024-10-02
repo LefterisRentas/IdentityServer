@@ -13,4 +13,11 @@ public interface IClientManager
     /// </summary>
     /// <returns></returns>
     Task<IEnumerable<Client>> GetClientsAsync();
+    
+    /// <summary>
+    /// Get a client by its id.
+    /// </summary>
+    /// <param name="clientId"></param>
+    /// <returns></returns>
+    Task<Client?> GetClientByIdAsync(string clientId);
 }

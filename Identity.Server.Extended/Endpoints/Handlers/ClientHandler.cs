@@ -18,4 +18,14 @@ internal static class ClientHandler
 
         return TypedResults.Ok(clientsList.ToList());
     }
+    
+    public static async Task<Results<Ok<Client>, NotFound>> GetClientById(IClientManager clientManager, string clientId)
+    {
+        var result = await clientManager.GetClientByIdAsync(clientId);
+        if (result is null)
+        {
+            return TypedResults.NotFound();
+        }
+        return TypedResults.Ok(result);
+    }
 }

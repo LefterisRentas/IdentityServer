@@ -2,19 +2,21 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Identity.Server.MVC;
 using Identity.Server.MVC.Security;
 
 namespace Identity.Server.MVC.Data.Seeding;
 
 public static class SeedData
 {
+    private const bool DELETE_DB = false;
+    
     public static async Task EnsureSeedData(string connectionString)
     {
         await Users.SeedUsersAndRoles(connectionString);
@@ -30,13 +32,27 @@ public static class SeedData
         using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
         {
             var op = serviceScope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>();
-            op.Database.EnsureDeleted();
-            op.Database.EnsureCreated();
+            if(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
+            {
+                //This should not be used in a production environment
+                if (DELETE_DB)
+                {
+                    op.Database.EnsureDeleted();
+                }
+                op.Database.EnsureCreated();
+            }
             // op.Database.Migrate();
 
             var context = serviceScope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
-            context.Database.EnsureDeleted();
-            context.Database.EnsureCreated();
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
+            {
+                //This should not be used in a production environment
+                if (DELETE_DB)
+                {
+                    context.Database.EnsureDeleted();
+                }
+                context.Database.EnsureCreated();
+            }
             // context.Database.Migrate();
 
             if (!context.IdentityResources.Any())

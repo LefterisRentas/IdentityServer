@@ -1,5 +1,7 @@
 ﻿using Identity.Server.Extended.Constants;
 using Identity.Server.Extended.Endpoints.Handlers;
+using Identity.Server.Extended.Security;
+using Identity.Server.MVC.Security;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -13,28 +15,33 @@ namespace Identity.Server.Extended.Endpoints;
 /// </summary>
 public static class ClientsApi
 {
-    private static readonly string[] SourceArray = ["clients"];
 
     /// <summary>
     /// Maps the clients API.
     /// </summary>
     /// <param name="routes"></param>
     /// <returns></returns>
-    public static RouteGroupBuilder MapClients(this IEndpointRouteBuilder routes)
+    public static void MapClients(this IEndpointRouteBuilder routes)
     {
         var options = routes.ServiceProvider.GetService<IConfiguration>();
-        var group = routes.MapGroup("/api/clients");
-        group.WithTags("Clients");
+        var readClientsGroup = routes.MapGroup(API_PREFIXES.CLIENTS_API_PREFIX);
+        readClientsGroup.WithTags("Clients");
         // Add security requirements, all incoming requests to this API *must*
         // be authenticated with a valid user.
-        var allowedScopes = SourceArray.ToArray();
-        group.RequireAuthorization(pb => pb.RequireAuthenticatedUser()
-            .RequireClaim(ExtendedClaimTypes.Scope, allowedScopes));
-        group.WithOpenApi();
+        //TODO: Extract this authorization policy to a shared location.
+        readClientsGroup.RequireAuthorization(pb => pb
+            .RequireAuthenticatedUser()
+            .RequireAssertion(x => x.User.IsInRole(Roles.ClientsRead) 
+                                   || x.User.IsInRole(Roles.Admin) 
+                                   || x.User.HasClaim(ExtendedClaimTypes.Scope, ApiScopes.ClientsRead.Name)
+                                   || x.User.HasClaim(ExtendedClaimTypes.Scope, ApiScopes.IdentityServerAdminClient.Name)
+        ));
+        readClientsGroup.WithOpenApi();
 
-        group.MapGet("", ClientHandler.GetClients)
+        readClientsGroup.MapGet("", ClientHandler.GetClients)
             .WithName(nameof(ClientHandler.GetClients));
-
-        return group;
+        
+        readClientsGroup.MapGet("/{clientId:minlength(1)}", ClientHandler.GetClientById)
+            .WithName(nameof(ClientHandler.GetClientById));
     }
 }

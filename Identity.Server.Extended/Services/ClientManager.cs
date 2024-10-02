@@ -21,12 +21,21 @@ public class ClientManager : IClientManager
     }
     
     /// <summary>
-    /// <inheritdoc cref="IClientManager"/>
+    /// <inheritdoc cref="IClientManager.GetClientsAsync"/>
     /// </summary>
     /// <returns></returns>
     public Task<IEnumerable<Client>> GetClientsAsync()
     {
         var clients = _context.Clients.AsNoTracking().ToList();
         return Task.FromResult<IEnumerable<Client>>(clients);
+    }
+
+    /// <summary>
+    /// <inheritdoc cref="IClientManager.GetClientByIdAsync"/>
+    /// </summary>
+    public Task<Client?> GetClientByIdAsync(string clientId)
+    {
+        var client = _context.Clients.AsNoTracking().FirstOrDefault(c => c.ClientId == clientId);
+        return Task.FromResult(client);
     }
 }

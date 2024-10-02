@@ -3,6 +3,7 @@
 
 
 using System.Collections.Generic;
+using System.Linq;
 using IdentityServer4.Models;
 
 namespace Identity.Server.MVC.Data.Seeding;
@@ -14,11 +15,13 @@ public static class SeedingList
         {
             new IdentityResources.OpenId(),
             new IdentityResources.Profile(),
+            new IdentityResources.Email(),
+            new IdentityResources.Address(),
+            new IdentityResources.Phone(),
         };
 
 
-    public static IEnumerable<ApiScope> ApiScopes =>
-        new[] { Security.ApiScopes.TestApi };
+    public static IEnumerable<ApiScope> ApiScopes => Security.ApiScopes.GetApiScopes().AsEnumerable();
 
     public static IEnumerable<Client> Clients => Security.Clients.ClientList;
         

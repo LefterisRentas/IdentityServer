@@ -44,7 +44,13 @@ if (seed)
     await SeedData.EnsureSeedData(connectionString);
     Log.Information("Done seeding database.");
 }
-
+app.MapSwagger();
+app.UseSwaggerUI(options =>
+{
+    options.RoutePrefix = "docs";
+    options.DocumentTitle = $"API Documentation";
+    options.SwaggerEndpoint($"/swagger/identity/swagger.json", "Identity Server");
+});
 app.MapClients();
 Log.Information("Starting host...");
 app.Run();
