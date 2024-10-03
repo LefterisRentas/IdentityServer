@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Security.Claims;
 using Identity.Server.Extended.Constants;
 using Microsoft.AspNetCore.Identity;
 
@@ -15,4 +14,6 @@ public class ApplicationUser : IdentityUser
     //TODO: Is this necessary or is it just for seeding? Needs more investigating around the Microsoft.AspNetCore.Identity package
     [PersonalData]
     public List<IdentityUserClaim<string>> Claims { get; set; }
+    [MaxLength(100)]
+    public byte[]? ProfilePicture { get; set; }
 }
