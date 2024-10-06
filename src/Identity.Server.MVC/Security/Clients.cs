@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Identity.Server.Extended.Security;
 using IdentityModel;
 using IdentityServer4;
 using IdentityServer4.Models;
@@ -60,8 +61,7 @@ public static class Clients
                 ClientClaimsPrefix = "",
                 AlwaysSendClientClaims = true,
                 AllowAccessTokensViaBrowser = true,
-                RequireConsent = true,
-                Claims = {}
+                RequireConsent = true
             },
 
             new Client

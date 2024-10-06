@@ -1,0 +1,52 @@
+﻿@model Identity.Server.MVC.Models.Account.LockoutViewModel
+
+<div class="flex items-center justify-center min-h-screen bg-gray-100">
+    <div class="max-w-md p-6 bg-white rounded-lg shadow-md dark:bg-gray-800">
+        <!-- Heading Section -->
+        <h1 class="text-2xl font-bold text-center text-gray-800 dark:text-white mb-6">
+            Account Locked
+        </h1>
+        <!-- Explanation Text -->
+        <p class="text-sm text-gray-600 dark:text-gray-300 text-center mb-4">
+            Your account has been locked due to too many failed login attempts. 
+            Please try again after the lockout period ends.
+        </p>
+
+        <!-- Lockout Information -->
+        @if (!Model.IsPermanentLockout)
+        {
+            <div class="flex justify-center mb-4">
+                <span class="text-sm font-medium text-red-600 dark:text-red-400">
+                    You are temporarily locked out until: 
+                    <strong>@Model.LockoutEnd.ToLocalTime().ToString("g")</strong>
+                </span>
+            </div>
+        }
+        else
+        {
+            <div class="flex justify-center mb-4">
+                <span class="text-sm font-medium text-red-600 dark:text-red-400">
+                    Your account has been permanently locked. Please contact support.
+                </span>
+            </div>
+        }
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col gap-4">
+            <!-- Retry Login Button -->
+            <a href="/account/login" class="w-full inline-flex justify-center items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md shadow focus:ring focus:ring-blue-300 dark:focus:ring-blue-500 focus:outline-none">
+                Retry Login
+            </a>
+
+            <!-- Reset Password Button -->
+            <a href="/account/reset-password" class="w-full inline-flex justify-center items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-md shadow focus:ring focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none">
+                Reset Password
+            </a>
+
+            <!-- Contact Support Button -->
+            <a href="/support" class="w-full inline-flex justify-center items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-md shadow focus:ring focus:ring-red-300 dark:focus:ring-red-500 focus:outline-none">
+                Contact Support
+            </a>
+        </div>
+    </div>
+</div>

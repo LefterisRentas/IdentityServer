@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using Identity.Server.Extended.Constants;
+﻿using Identity.Server.Extended.Constants;
 using IdentityModel;
 using IdentityServer4.Models;
 
-namespace Identity.Server.MVC.Security;
+namespace Identity.Server.Extended.Security;
 
 /// <summary>
 /// 

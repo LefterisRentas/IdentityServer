@@ -3,6 +3,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <UserSecretsId>e614b8c7-ba24-490d-83a2-e562c321077e</UserSecretsId>
     <RootNamespace>Identity.Server.MVC</RootNamespace>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="MailKit" Version="4.7.1.1" />
@@ -17,6 +18,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Migrations\" />
+    <Folder Include="Views\Error\" />
     <Folder Include="wwwroot\images\" />
   </ItemGroup>
   <ItemGroup>

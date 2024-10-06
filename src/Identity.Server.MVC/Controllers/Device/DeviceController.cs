@@ -45,7 +45,7 @@ public class DeviceController : Controller
     public async Task<IActionResult> Index()
     {
         string userCodeParamName = _options.Value.UserInteraction.DeviceVerificationUserCodeParameter;
-        string userCode = Request.Query[userCodeParamName];
+        string? userCode = Request.Query[userCodeParamName];
         if (string.IsNullOrWhiteSpace(userCode)) return View("UserCodeCapture");
 
         var vm = await BuildViewModelAsync(userCode);
@@ -84,7 +84,7 @@ public class DeviceController : Controller
         var request = await _interaction.GetAuthorizationContextAsync(model.UserCode);
         if (request == null) return result;
 
-        ConsentResponse grantedConsent = null;
+        ConsentResponse? grantedConsent = null;
 
         // user clicked 'no' - send back the standard 'access_denied' response
         if (model.Button == "no")
@@ -138,13 +138,13 @@ public class DeviceController : Controller
         else
         {
             // we need to redisplay the consent UI
-            result.ViewModel = await BuildViewModelAsync(model.UserCode, model);
+            result.ViewModel = await BuildViewModelAsync(model.UserCode, model) ?? throw new InvalidOperationException("ConsentViewModel should not be null");
         }
 
         return result;
     }
 
-    private async Task<DeviceAuthorizationViewModel> BuildViewModelAsync(string userCode, DeviceAuthorizationInputModel model = null)
+    private async Task<DeviceAuthorizationViewModel?> BuildViewModelAsync(string userCode, DeviceAuthorizationInputModel? model = null)
     {
         var request = await _interaction.GetAuthorizationContextAsync(userCode);
         if (request != null)
@@ -160,10 +160,10 @@ public class DeviceController : Controller
         var vm = new DeviceAuthorizationViewModel
         {
             UserCode = userCode,
-            Description = model?.Description,
+            Description = model.Description ?? throw new ArgumentNullException(nameof(model)),
 
-            RememberConsent = model?.RememberConsent ?? true,
-            ScopesConsented = model?.ScopesConsented ?? Enumerable.Empty<string>(),
+            RememberConsent = model.RememberConsent,
+            ScopesConsented = model.ScopesConsented ?? Enumerable.Empty<string>(),
 
             ClientName = request.Client.ClientName ?? request.Client.ClientId,
             ClientUrl = request.Client.ClientUri,

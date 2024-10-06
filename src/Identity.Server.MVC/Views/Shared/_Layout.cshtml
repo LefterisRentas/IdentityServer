@@ -14,11 +14,15 @@
     <link rel="stylesheet" href="~/css/bootstrap-icons-1.11.3/font/bootstrap-icons.min.css"/>
     <link rel="stylesheet" href="~/lib/flowbite/dist/flowbite.min.css"/>
 </head>
-<body class="p-5 bg-white dark:bg-gray-900 antialiased">
-<partial name="_Nav"/>
-<partial name="_Footer"/>
-<div class="max-w-lg mx-auto">
+<body class="p-5 flex flex-col bg-white dark:bg-gray-900 antialiased min-h-screen">
+<div id="nav" class="fixed top-0 start-0 w-full">
+    <partial name="_Nav"/>
+</div>
+<div class="max-w-lg mx-auto flex-grow mt-16">
     @RenderBody()
+</div>
+<div id="footer" class="bottom-0">
+    <partial name="_Footer"/>
 </div>
 
 <script src="~/lib/jquery/dist/jquery.slim.min.js"></script>

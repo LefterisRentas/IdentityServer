@@ -6,5 +6,5 @@ namespace Identity.Server.MVC.Services.Abstractions;
 
 public interface IEmailService
 {
-    Task<EmailCode> SendEmailAsync(string[] recipients, string? senderName, string? senderAddress, string subject, string body, string[]? bccRecipients = null, EmailAttachment[] attachments = null);
+    Task<EmailCode> SendEmailAsync(string[] recipients, string? senderName, string? senderAddress, string subject, string body, string[]? bccRecipients = null, EmailAttachment[]? attachments = null);
 }

@@ -67,19 +67,21 @@
                 <ul class="list-inline space-y-4">
                     @foreach (var provider in Model.VisibleExternalProviders)
                     {
-                    var iconClass = ExternalProviderIcons.ProviderIcons.ContainsKey(provider.DisplayName)
-                    ? ExternalProviderIcons.ProviderIcons[provider.DisplayName]
-                    : "fas fa-sign-in-alt"; // Default icon if no specific icon is found
+                        // Get the icon class for the provider
+                        // If no display name is set, use an empty string, so we can use a default icon
+                        var iconClass = ExternalProviderIcons.ProviderIcons.TryGetValue(provider.DisplayName ?? string.Empty, out var icon)
+                        ? icon
+                        : "fas fa-sign-in-alt"; // Default icon if no specific icon is found
 
-                    <li class="list-inline-item">
-                        <a class="btn bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded inline-flex items-center"
-                           asp-controller="External"
-                           asp-action="Challenge"
-                           asp-route-scheme="@provider.AuthenticationScheme"
-                           asp-route-returnUrl="@Model.ReturnUrl">
-                            <i class="@iconClass mr-2"></i> @provider.DisplayName
-                        </a>
-                    </li>
+                        <li class="list-inline-item">
+                            <a class="btn bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded inline-flex items-center"
+                               asp-controller="External"
+                               asp-action="Challenge"
+                               asp-route-scheme="@provider.AuthenticationScheme"
+                               asp-route-returnUrl="@Model.ReturnUrl">
+                                <i class="@iconClass mr-2"></i> @provider.DisplayName
+                            </a>
+                        </li>
                     }
                 </ul>
             </div>

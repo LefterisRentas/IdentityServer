@@ -9,6 +9,9 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Identity.Server.Extended.Configuration;
 
+/// <summary>
+/// DI configuration for the extended Identity Server.
+/// </summary>
 public static class DiConfig
 {
     /// <summary>

@@ -12,7 +12,7 @@
             </div>
             <div class="card-body">
                 <dl>
-                    @foreach (var claim in Model.AuthenticateResult.Principal.Claims)
+                    @foreach (var claim in Model.AuthenticateResult.Principal?.Claims ?? [])
                     {
                     <div class="mb-2">
                         <dt class="font-medium">@claim.Type</dt>
@@ -29,7 +29,7 @@
             </div>
             <div class="card-body">
                 <dl>
-                    @foreach (var prop in Model.AuthenticateResult.Properties.Items)
+                    @foreach (var prop in Model.AuthenticateResult.Properties?.Items ?? new Dictionary<string, string?>())
                     {
                     <div class="mb-2">
                         <dt class="font-medium">@prop.Key</dt>

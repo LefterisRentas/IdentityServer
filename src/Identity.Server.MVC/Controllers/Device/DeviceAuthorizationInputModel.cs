@@ -8,5 +8,6 @@ namespace Identity.Server.MVC.Controllers.Device;
 
 public class DeviceAuthorizationInputModel : ConsentInputModel
 {
-    public string UserCode { get; set; }
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global
+    public string? UserCode { get; set; }
 }

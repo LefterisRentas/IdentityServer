@@ -8,15 +8,18 @@ public abstract class EmailCode
     /// <summary>
     /// The success or failure code.
     /// </summary>
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public string Code { get; private set; }
     /// <summary>
     /// The success or failure description.
     /// </summary>
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public string Description { get; private set; }
     
     /// <summary>
     /// Indicates if the email code is a success code.
     /// </summary>
+    // ReSharper disable once UnusedMember.Global
     public bool IsSuccess => this is EmailSuccessCode;
     
     /// <summary>

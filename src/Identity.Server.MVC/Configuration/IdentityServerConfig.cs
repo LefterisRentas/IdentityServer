@@ -70,8 +70,8 @@ public static class IdentityServerConfig
                 // register your Identity.Server.MVC with Google at https://console.developers.google.com
                 // enable the Google+ API
                 // set the redirect URI to https://localhost:2000/signin-google
-                options.ClientId = builder.Configuration.GetValue<string>("Google:ClientId");
-                options.ClientSecret = builder.Configuration.GetValue<string>("Google:ClientSecret");
+                options.ClientId = builder.Configuration.GetValue<string>("Google:ClientId") ?? string.Empty;
+                options.ClientSecret = builder.Configuration.GetValue<string>("Google:ClientSecret") ?? string.Empty;
             });
         builder.Services.ConfigureApplicationCookie(options => {
             options.AccessDeniedPath = "/account/access-denied";
@@ -79,10 +79,10 @@ public static class IdentityServerConfig
         return builder;
     }
     
-    [Obsolete]
-    private static IIdentityServerBuilder AddDeveloperSigningCredential(IIdentityServerBuilder builder)
+    [Obsolete("This method is not recommended for production. It is only for development scenarios.")]
+    private static void AddDeveloperSigningCredential(IIdentityServerBuilder builder)
     {
-        return builder.AddDeveloperSigningCredential();
+        builder.AddDeveloperSigningCredential();
     }
     
     private static void CleanCookieConfig(this IServiceCollection services)

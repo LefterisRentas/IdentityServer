@@ -12,5 +12,9 @@ public enum TwoFactorProviders
     /// <summary>
     /// Phone provider.
     /// </summary>
-    Phone
+    Phone,
+    /// <summary>
+    /// None provider.
+    /// </summary>
+    None = -1
 }

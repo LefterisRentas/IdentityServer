@@ -29,8 +29,9 @@ public static class SeedData
 
     private static void SeedResources(IApplicationBuilder app)
     {
-        using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+        using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>()?.CreateScope())
         {
+            if (serviceScope is null) return;
             var op = serviceScope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>();
             if(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
             {

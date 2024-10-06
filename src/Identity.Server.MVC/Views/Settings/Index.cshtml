@@ -8,27 +8,32 @@
 
     <partial name="_ValidationSummary" />
 
-    <form asp-action="Update" method="post">
+    <form enctype="multipart/form-data" asp-action="Update" method="post">
         <div class="form-group mb-4">
-            <label asp-for="Username" class="block text-sm font-medium text-gray-300"></label>
-            <input asp-for="Username" class="form-control mt-1 block w-full rounded-md bg-gray-700 border-transparent focus:border-gray-500 focus:ring-0" readonly />
+            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Upload Profile Picture</label>
+            <input type="file" asp-for="ProfilePicture" class="form-control mt-1 block w-full rounded-md bg-gray-700 border-transparent focus:border-gray-500 focus:ring-0" accept="image/*" />
+            <span asp-validation-for="ProfilePicture"></span>
         </div>
         <div class="form-group mb-4">
-            <label asp-for="Email" class="block text-sm font-medium text-gray-300"></label>
-            <input asp-for="Email" class="form-control mt-1 block w-full rounded-md bg-gray-700 border-transparent focus:border-gray-500 focus:ring-0" />
+            <label asp-for="Username" class="block text-sm font-medium text-gray-500 dark:text-gray-400"></label>
+            <input asp-for="Username" class="form-control mt-1 block w-full rounded-md bg-gray-700 border-transparent focus:border-gray-500 focus:ring-0" readonly/>
         </div>
         <div class="form-group mb-4">
-            <label asp-for="PhoneNumber" class="block text-sm font-medium text-gray-300"></label>
-            <input asp-for="PhoneNumber" class="form-control mt-1 block w-full rounded-md bg-gray-700 border-transparent focus:border-gray-500 focus:ring-0" />
+            <label asp-for="Email" class="block text-sm font-medium text-gray-500 dark:text-gray-400"></label>
+            <input asp-for="Email" class="form-control mt-1 block w-full rounded-md bg-gray-700 border-transparent focus:border-gray-500 focus:ring-0"/>
+        </div>
+        <div class="form-group mb-4">
+            <label asp-for="PhoneNumber" class="block text-sm font-medium text-gray-500 dark:text-gray-400"></label>
+            <input asp-for="PhoneNumber" class="form-control mt-1 block w-full rounded-md bg-gray-700 border-transparent focus:border-gray-500 focus:ring-0"/>
         </div>
         <div class="form-group mb-4">
             <div class="form-check">
-                <input asp-for="TwoFactorEnabled" class="form-check-input" />
-                <label asp-for="TwoFactorEnabled" class="form-check-label text-sm text-gray-300">Enable Two-Factor Authentication</label>
+                <input asp-for="TwoFactorEnabled" class="form-check-input"/>
+                <label asp-for="TwoFactorEnabled" class="form-check-label text-sm text-gray-500 dark:text-gray-400">Enable Two-Factor Authentication</label>
             </div>
         </div>
         <div class="form-group mb-4">
-            <label asp-for="TwoFactorProvider" class="block text-sm font-medium text-gray-300"></label>
+            <label asp-for="TwoFactorProvider" class="block text-sm font-medium text-gray-500 dark:text-gray-400"></label>
             <select asp-for="TwoFactorProvider" class="form-control mt-1 block w-full rounded-md bg-gray-700 border-transparent focus:border-gray-500 focus:ring-0">
                 <option value="@TwoFactorProviders.Email">Email</option>
                 <option value="@TwoFactorProviders.Phone">Phone</option>

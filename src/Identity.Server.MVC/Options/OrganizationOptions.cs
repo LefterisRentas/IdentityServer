@@ -12,4 +12,6 @@ public class OrganizationOptions
     public string ContactZip { get; set; }  = "12345";
     public string ContactCountry { get; set; } = "US";
     public string LogoUri { get; set; } = "https://example.com/logo.png";
+    public string WebsiteUri { get; set; } = "https://example.com";
+    public string ContactUri { get; set; } = "https://example.com/contact";
 }

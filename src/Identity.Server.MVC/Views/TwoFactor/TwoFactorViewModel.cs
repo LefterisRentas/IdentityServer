@@ -6,7 +6,7 @@ public class TwoFactorViewModel
 {
     [Required]
     [Display(Name = "Code")]
-    public string Code { get; set; }
+    public string Code { get; set; } = string.Empty;
 
     [Display(Name = "Remember this browser")]
     public bool RememberBrowser { get; set; }
@@ -14,5 +14,5 @@ public class TwoFactorViewModel
     [Display(Name = "Remember me")]
     public bool RememberMe { get; set; }
     
-    public string ReturnUrl { get; set; }
+    public string ReturnUrl { get; set; } = string.Empty;
 }

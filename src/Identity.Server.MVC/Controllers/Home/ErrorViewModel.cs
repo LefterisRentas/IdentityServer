@@ -6,16 +6,11 @@ using IdentityServer4.Models;
 
 namespace Identity.Server.MVC.Controllers.Home;
 
-public class ErrorViewModel
+public class ErrorViewModel(ErrorMessage error)
 {
-    public ErrorViewModel()
+    public ErrorViewModel(string error) : this(new ErrorMessage { Error = error })
     {
     }
 
-    public ErrorViewModel(string error)
-    {
-        Error = new ErrorMessage { Error = error };
-    }
-
-    public ErrorMessage Error { get; set; }
+    public ErrorMessage Error { get; set; } = error;
 }

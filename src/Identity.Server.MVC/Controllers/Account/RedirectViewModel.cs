@@ -5,5 +5,5 @@ namespace Identity.Server.MVC.Controllers.Account;
 
 public class RedirectViewModel
 {
-    public string RedirectUrl { get; set; }
+    public string? RedirectUrl { get; set; }
 }

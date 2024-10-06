@@ -21,7 +21,7 @@ public static class SeedingList
         };
 
 
-    public static IEnumerable<ApiScope> ApiScopes => Security.ApiScopes.GetApiScopes().AsEnumerable();
+    public static IEnumerable<ApiScope> ApiScopes => Extended.Security.ApiScopes.GetApiScopes().AsEnumerable();
 
     public static IEnumerable<Client> Clients => Security.Clients.ClientList;
         

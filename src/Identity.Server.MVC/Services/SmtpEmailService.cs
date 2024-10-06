@@ -28,7 +28,7 @@ public class SmtpEmailService : IEmailService
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<EmailCode> SendEmailAsync(string[] recipients, string? senderName, string? senderAddress, string subject, string body, string[]? bccRecipients = null, EmailAttachment[] attachments = null)
+    public async Task<EmailCode> SendEmailAsync(string[] recipients, string? senderName, string? senderAddress, string subject, string body, string[]? bccRecipients = null, EmailAttachment[]? attachments = null)
     {
         var message = new MimeMessage();
 
