@@ -6,28 +6,4 @@
     .body-container {
         @apply mt-14 pb-10;
     }
-
-    .welcome-page {
-        @apply bg-gray-800 text-gray-100 p-6 rounded-lg shadow-md;
-    }
-
-    .welcome-page h1 {
-        @apply text-3xl font-bold mb-4 flex items-center;
-    }
-
-    .welcome-page h1 img {
-        @apply w-12 h-12 mr-4;
-    }
-
-    .welcome-page ul {
-        @apply list-none;
-    }
-
-    .welcome-page ul li {
-        @apply my-2;
-    }
-
-    .welcome-page ul li a {
-        @apply text-blue-400 hover:underline;
-    }
 }

@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -101,10 +102,10 @@ public class ConsentController : Controller
         var request = await _interaction.GetAuthorizationContextAsync(model.ReturnUrl);
         if (request == null) return result;
 
-        ConsentResponse grantedConsent = null;
+        ConsentResponse? grantedConsent = null;
 
         // user clicked 'no' - send back the standard 'access_denied' response
-        if (model?.Button == "no")
+        if (model.Button == "no")
         {
             grantedConsent = new ConsentResponse { Error = AuthorizationError.AccessDenied };
 
@@ -112,7 +113,7 @@ public class ConsentController : Controller
             await _events.RaiseAsync(new ConsentDeniedEvent(User.GetSubjectId(), request.Client.ClientId, request.ValidatedResources.RawScopeValues));
         }
         // user clicked 'yes' - validate the data
-        else if (model?.Button == "yes")
+        else if (model.Button == "yes")
         {
             // if the user consented to some scope, build the response model
             if (model.ScopesConsented != null && model.ScopesConsented.Any())
@@ -149,29 +150,26 @@ public class ConsentController : Controller
             await _interaction.GrantConsentAsync(request, grantedConsent);
 
             // indicate that's it ok to redirect back to authorization endpoint
-            result.RedirectUri = model.ReturnUrl;
+            result.RedirectUri = model?.ReturnUrl ?? throw new ArgumentNullException(nameof(model.ReturnUrl));
             result.Client = request.Client;
         }
         else
         {
             // we need to redisplay the consent UI
-            result.ViewModel = await BuildViewModelAsync(model.ReturnUrl, model);
+            result.ViewModel = await BuildViewModelAsync(model?.ReturnUrl ?? throw new ArgumentNullException(nameof(model.ReturnUrl)), model) ?? throw new InvalidOperationException("ConsentViewModel cannot be null");
         }
 
         return result;
     }
 
-    private async Task<ConsentViewModel> BuildViewModelAsync(string returnUrl, ConsentInputModel model = null)
+    private async Task<ConsentViewModel?> BuildViewModelAsync(string returnUrl, ConsentInputModel? model = null)
     {
         var request = await _interaction.GetAuthorizationContextAsync(returnUrl);
         if (request != null)
         {
             return CreateConsentViewModel(model, returnUrl, request);
         }
-        else
-        {
-            _logger.LogError("No consent request matching request: {0}", returnUrl);
-        }
+        _logger.LogError("No consent request matching request: {0}", returnUrl);
 
         return null;
     }
@@ -182,8 +180,8 @@ public class ConsentController : Controller
     {
         var vm = new ConsentViewModel
         {
-            RememberConsent = model?.RememberConsent ?? true,
-            ScopesConsented = model?.ScopesConsented ?? Enumerable.Empty<string>(),
+            RememberConsent = model.RememberConsent,
+            ScopesConsented = model.ScopesConsented ?? Enumerable.Empty<string>(),
             Description = model?.Description,
 
             ReturnUrl = returnUrl,
@@ -228,7 +226,7 @@ public class ConsentController : Controller
         };
     }
 
-    public ScopeViewModel CreateScopeViewModel(ParsedScopeValue parsedScopeValue, ApiScope apiScope, bool check)
+    private ScopeViewModel CreateScopeViewModel(ParsedScopeValue parsedScopeValue, ApiScope apiScope, bool check)
     {
         var displayName = apiScope.DisplayName ?? apiScope.Name;
         if (!string.IsNullOrWhiteSpace(parsedScopeValue.ParsedParameter))

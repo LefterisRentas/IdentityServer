@@ -8,11 +8,11 @@ namespace Identity.Server.MVC.Controllers.Consent;
 
 public class ConsentViewModel : ConsentInputModel
 {
-    public string ClientName { get; set; }
-    public string ClientUrl { get; set; }
-    public string ClientLogoUrl { get; set; }
+    public string ClientName { get; set; } = default!;
+    public string? ClientUrl { get; set; }
+    public string? ClientLogoUrl { get; set; }
     public bool AllowRememberConsent { get; set; }
 
-    public IEnumerable<ScopeViewModel> IdentityScopes { get; set; }
-    public IEnumerable<ScopeViewModel> ApiScopes { get; set; }
+    public IEnumerable<ScopeViewModel> IdentityScopes { get; set; } = default!;
+    public IEnumerable<ScopeViewModel> ApiScopes { get; set; } = default!;
 }

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Identity.Server.Extended.Security;
 using IdentityModel;
 using Identity.Server.MVC.Data;
 using Identity.Server.MVC.Models;
@@ -30,7 +31,7 @@ internal static class Users
             using (var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 var context = scope.ServiceProvider.GetService<ApplicationDbContext>();
-                if (!context.Database.EnsureCreated())
+                if (context is not null && !context.Database.EnsureCreated())
                 {
                     context.Database.Migrate();
                 }
@@ -88,7 +89,7 @@ internal static class Users
     {
         foreach (var role in Roles.GetRoles())
         {
-            if (!await roleMgr.RoleExistsAsync(role.Name))
+            if (!await roleMgr.RoleExistsAsync(role.Name ?? throw new InvalidOperationException("Role name cannot be null at seed time")))
             {
                 var result = await roleMgr.CreateAsync(role);
                 if (!result.Succeeded)

@@ -1,0 +1,27 @@
+﻿@model Identity.Server.MVC.Models.Error.InternalServerError500;
+
+<div>
+    <div class="leading-3">
+        <h1>Error</h1>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="alert alert-danger">
+                500: Sorry, there was an error
+                @if (Model.Message != null)
+                {
+                    <strong>
+                        <em>
+                            : @Model.Message
+                        </em>
+                    </strong>
+                }
+                @if (Model.ShowTraceId)
+                {
+                    <div>Trace Id: @Model.TraceId </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

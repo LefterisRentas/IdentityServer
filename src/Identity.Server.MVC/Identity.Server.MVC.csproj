@@ -3,12 +3,9 @@
     <TargetFramework>net8.0</TargetFramework>
     <UserSecretsId>e614b8c7-ba24-490d-83a2-e562c321077e</UserSecretsId>
     <RootNamespace>Identity.Server.MVC</RootNamespace>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="12.0.0" />
-    <PackageReference Include="Cnblogs.IdentityServer4.EntityFramework.Storage" Version="4.2.1" />
-    <PackageReference Include="IdentityServer4.AspNetIdentity" Version="4.1.2" />
-    <PackageReference Include="IdentityServer4.EntityFramework" Version="4.1.2" />
     <PackageReference Include="MailKit" Version="4.7.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.6" />
     <PackageReference Include="MimeKit" Version="4.7.1" />
@@ -20,11 +17,15 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.6" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Data\Migrations\" />
+    <Folder Include="Migrations\" />
+    <Folder Include="Views\Error\" />
+    <Folder Include="wwwroot\images\" />
   </ItemGroup>
   <ItemGroup>
-    <UpToDateCheckBuilt Include="wwwroot/css/site.scss" Set="Css" />
     <UpToDateCheckBuilt Include="tailwind.config.js" Set="Css" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Identity.Server.Extended\Identity.Server.Extended.csproj" />
   </ItemGroup>
 
   <Target Name="Tailwind" BeforeTargets="Build">

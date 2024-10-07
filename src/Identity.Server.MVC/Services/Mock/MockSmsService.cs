@@ -13,8 +13,9 @@ public class MockSmsService : ISmsService
         _logger = logger;
     }
     
-    public async Task SendSmsAsync(string phoneNumber, string message)
+    public Task SendSmsAsync(string phoneNumber, string message)
     {
         _logger.LogInformation($"Sending SMS to {phoneNumber} with message: {message}");
+        return Task.CompletedTask;
     }
 }

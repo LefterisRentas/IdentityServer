@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Security.Claims;
-using Identity.Server.MVC.Constants;
+using System.ComponentModel.DataAnnotations.Schema;
+using Identity.Server.Extended.Constants;
+using Identity.Server.MVC.Data.User;
 using Microsoft.AspNetCore.Identity;
 
 namespace Identity.Server.MVC.Models;
@@ -10,9 +10,12 @@ namespace Identity.Server.MVC.Models;
 public class ApplicationUser : IdentityUser
 {
     [PersonalData]
-    public string[] ExternalProviderIds { get; set; }
-    public TwoFactorProviders TwoFactorProvider { get; set; }
+    public string[] ExternalProviderIds { get; set; } = [];
+    public TwoFactorProviders TwoFactorProvider { get; set; } = TwoFactorProviders.None;
     //TODO: Is this necessary or is it just for seeding? Needs more investigating around the Microsoft.AspNetCore.Identity package
     [PersonalData]
-    public List<IdentityUserClaim<string>> Claims { get; set; }
+    public List<IdentityUserClaim<string>> Claims { get; set; } = new();
+    [ForeignKey("ProfilePicture")]
+    public int? ProfilePictureId { get; set; }
+    public ProfilePicture? ProfilePicture { get; set; } = new();
 }

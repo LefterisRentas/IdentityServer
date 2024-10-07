@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "SelfHost": {
+    "HTTPS": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {

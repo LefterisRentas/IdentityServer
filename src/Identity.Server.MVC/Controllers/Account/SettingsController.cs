@@ -1,29 +1,36 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.IO;
+using System.Net.Mime;
+using System.Threading.Tasks;
+using Identity.Server.MVC.Data.User;
 using Identity.Server.MVC.Models;
 using Identity.Server.MVC.Models.Account.Settings;
 using Identity.Server.MVC.Services.Abstractions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace Identity.Server.MVC.Controllers.Account
 {
     [Authorize]
     [Route("account/settings")]
-    public class SettingsController : Controller
+    public class SettingsController(
+        UserManager<ApplicationUser> userManager,
+        SignInManager<ApplicationUser> signInManager,
+        IEmailService emailService,
+        ISmsService smsService,
+        ILogger<SettingsController> logger,
+        IProfilePictureService profilePictureService)
+        : Controller
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly IEmailService _emailService;
-        private readonly ISmsService _smsService;
-
-        public SettingsController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEmailService emailService, ISmsService smsService)
-        {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _emailService = emailService;
-            _smsService = smsService;
-        }
+        private readonly UserManager<ApplicationUser> _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
+        private readonly SignInManager<ApplicationUser> _signInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
+        private readonly IEmailService _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
+        private readonly ISmsService _smsService = smsService ?? throw new ArgumentNullException(nameof(smsService));
+        private readonly ILogger<SettingsController> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        private readonly IProfilePictureService _profilePictureService = profilePictureService ?? throw new ArgumentNullException(nameof(profilePictureService));
 
         [HttpGet]
         public async Task<IActionResult> Index()
@@ -34,13 +41,19 @@ namespace Identity.Server.MVC.Controllers.Account
                 return NotFound("User not found.");
             }
 
+            FormFile? profilePicture;
+            using (var stream = new MemoryStream(user.ProfilePicture?.Data ?? new byte[0]))
+            {
+                profilePicture = new FormFile(stream, 0, stream.Length, user.ProfilePicture?.FileName ?? "profilePicture", user.ProfilePicture?.ContentType ?? MediaTypeNames.Image.Jpeg);
+            }
             var model = new SettingsViewModel
             {
-                Username = user.UserName,
-                Email = user.Email,
-                PhoneNumber = user.PhoneNumber,
-                TwoFactorEnabled = await _userManager.GetTwoFactorEnabledAsync(user),
-                TwoFactorProvider = user.TwoFactorProvider
+                Username = user.UserName ?? string.Empty,
+                Email = user.Email ?? string.Empty,
+                PhoneNumber = user?.PhoneNumber ?? string.Empty,
+                TwoFactorEnabled = await _userManager.GetTwoFactorEnabledAsync(user ?? throw new InvalidOperationException("User not found.")),
+                TwoFactorProvider = user.TwoFactorProvider,
+                ProfilePicture = profilePicture
             };
 
             return View(model);
@@ -58,18 +71,39 @@ namespace Identity.Server.MVC.Controllers.Account
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
+                _logger.LogError("User not found.");
                 return NotFound("User not found.");
+            }
+
+            if (model.ProfilePicture != null)
+            {
+                using (var stream = new MemoryStream())
+                {
+                    if(user.ProfilePicture is not null)
+                    {
+                        await _profilePictureService.DeleteProfilePictureAsync(user.ProfilePicture.Id);
+                    }
+                    await model.ProfilePicture.CopyToAsync(stream);
+                    var profilePictureId = (await _profilePictureService.SaveProfilePictureAsync(new ProfilePicture
+                    {
+                        Data = stream.ToArray(),
+                        FileName = model.ProfilePicture.FileName,
+                        ContentType = model.ProfilePicture.ContentType
+                    }))?.Id;
+                    if(profilePictureId is null) throw new ArgumentNullException($"Failed to save profile picture, {profilePictureId}", nameof(profilePictureId));
+                    user.ProfilePicture = await _profilePictureService.GetProfilePictureAsync(profilePictureId.Value);
+                }
             }
 
             if (user.Email != model.Email)
             {
-                var token = await _userManager.GenerateChangeEmailTokenAsync(user, model.Email);
+                var token = await _userManager.GenerateChangeEmailTokenAsync(user, model.Email ?? throw new InvalidOperationException("Email is required."));
                 await _emailService.SendEmailAsync(new[] { model.Email }, null, null, "Confirm your email", $"Your confirmation code is {token}");
                 TempData["NewEmail"] = model.Email;
                 return RedirectToAction("ConfirmEmailChange");
             }
 
-            if (user.PhoneNumber != model.PhoneNumber)
+            if (user.PhoneNumber != model.PhoneNumber && !string.IsNullOrEmpty(model.PhoneNumber))
             {
                 var token = await _userManager.GenerateChangePhoneNumberTokenAsync(user, model.PhoneNumber);
                 await _smsService.SendSmsAsync(model.PhoneNumber, $"Your confirmation code is {token}");

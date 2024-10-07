@@ -1,5 +1,6 @@
 ﻿using Identity.Server.MVC.Events.EventSinks;
 using Identity.Server.MVC.Options;
+using Identity.Server.MVC.Services;
 using Identity.Server.MVC.Services.Abstractions;
 using Identity.Server.MVC.Services.Mock;
 using IdentityServer4.Services;
@@ -18,6 +19,7 @@ public static class DiConfig
         builder.Services.AddTransient<IEventSink, UserCreationEventSink>();
         builder.Services.AddTransient<IEmailService, MockEmailService>();
         builder.Services.AddTransient<ISmsService, MockSmsService>();
+        builder.Services.AddTransient<IProfilePictureService, ProfilePictureService>();
         return builder;
     }
 }

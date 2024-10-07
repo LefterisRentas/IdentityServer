@@ -1,4 +1,5 @@
-﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+﻿@using Identity.Server.MVC.Controllers.Grants
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model Identity.Server.MVC.Controllers.Grants.GrantsViewModel
 
 <div class="grants-page">
@@ -7,7 +8,7 @@
         <p>Below is the list of applications you have given permission to and the resources they have access to.</p>
     </div>
 
-    @if (Model.Grants.Any() == false)
+    @if (Model.Grants?.Any() == false)
     {
         <div class="row">
             <div class="col-sm-8">
@@ -19,7 +20,7 @@
     }
     else
     {
-        foreach (var grant in Model.Grants)
+        foreach (var grant in Model.Grants ?? Enumerable.Empty<GrantViewModel>())
         {
             <div class="card">
                 <div class="card-header">
@@ -57,7 +58,7 @@
                             <label>Expires:</label> @grant.Expires.Value.ToString("yyyy-MM-dd")
                         </li>
                     }
-                    @if (grant.IdentityGrantNames.Any())
+                    @if (grant.IdentityGrantNames?.Any() ?? false)
                     {
                         <li class="list-group-item">
                             <label>Identity Grants</label>
@@ -69,7 +70,7 @@
                             </ul>
                         </li>
                     }
-                    @if (grant.ApiGrantNames.Any())
+                    @if (grant.ApiGrantNames?.Any() ?? false)
                     {
                         <li class="list-group-item">
                             <label>API Grants</label>

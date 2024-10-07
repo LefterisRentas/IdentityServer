@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Linq;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Identity.Server.MVC.Services.Abstractions;
 using System.Threading.Tasks;
-using Identity.Server.MVC.Constants;
+using Identity.Server.Extended.Constants;
 using Identity.Server.MVC.Models;
+using Identity.Server.MVC.Models.Account;
 using Identity.Server.MVC.Views.TwoFactor;
 using IdentityModel;
 using Microsoft.AspNetCore.Authentication;
@@ -54,6 +54,11 @@ namespace Identity.Server.MVC.Controllers.Account
             var code = await _userManager.GenerateTwoFactorTokenAsync(user, "Email");
             if (user.TwoFactorProvider == TwoFactorProviders.Email)
             {
+                if (string.IsNullOrWhiteSpace(user.Email))
+                {
+                    _logger.LogWarning("User {UserName} does not have an email address.", user.UserName);
+                    return View();
+                }
                 await _emailService.SendEmailAsync(
                     [user.Email],
                     null,
@@ -113,7 +118,8 @@ namespace Identity.Server.MVC.Controllers.Account
             if (result.IsLockedOut)
             {
                 await HttpContext.SignOutAsync(IdentityConstants.TwoFactorUserIdScheme);
-                return View("Lockout");
+                //TODO: Get the lockout end date
+                return View("Lockout", new LockoutViewModel{ LockoutEnd = DateTimeOffset.MaxValue, IsPermanentLockout = result.IsNotAllowed });
             }
 
             _logger.LogWarning("Invalid code for user {UserName}", user.UserName);
@@ -156,7 +162,12 @@ namespace Identity.Server.MVC.Controllers.Account
             }
             else
             {
-                await _emailService.SendEmailAsync(new[] { user.Email }, null, null, "Two-Factor Authentication Code", $"Your authentication code is {code}");
+                if(string.IsNullOrWhiteSpace(user.Email))
+                {
+                    _logger.LogWarning("User {UserName} does not have an email address.", user.UserName);
+                    return RedirectToAction("Index");
+                }
+                await _emailService.SendEmailAsync([user.Email], null, null, "Two-Factor Authentication Code", $"Your authentication code is {code}");
             }
 
             _logger.LogInformation("Two-factor authentication code resent to user {UserName} via {Provider}.", user.UserName, provider);

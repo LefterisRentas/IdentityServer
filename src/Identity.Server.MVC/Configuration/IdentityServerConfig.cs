@@ -1,13 +1,16 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using Identity.Server.MVC.Data;
 using Identity.Server.MVC.Models;
 using IdentityServer4;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Identity.Server.MVC.Configuration;
 
@@ -58,6 +61,7 @@ public static class IdentityServerConfig
 
         // not recommended for production - you need to store your key material somewhere secure
         AddDeveloperSigningCredential(identityServerBuilder);
+        builder.Services.CleanCookieConfig();
         builder.Services.AddAuthentication()
             .AddGoogle(options =>
             {
@@ -66,15 +70,46 @@ public static class IdentityServerConfig
                 // register your Identity.Server.MVC with Google at https://console.developers.google.com
                 // enable the Google+ API
                 // set the redirect URI to https://localhost:2000/signin-google
-                options.ClientId = builder.Configuration.GetValue<string>("Google:ClientId");
-                options.ClientSecret = builder.Configuration.GetValue<string>("Google:ClientSecret");
+                options.ClientId = builder.Configuration.GetValue<string>("Google:ClientId") ?? string.Empty;
+                options.ClientSecret = builder.Configuration.GetValue<string>("Google:ClientSecret") ?? string.Empty;
             });
+        builder.Services.ConfigureApplicationCookie(options => {
+            options.AccessDeniedPath = "/account/access-denied";
+        });
         return builder;
     }
     
-    [Obsolete]
-    private static IIdentityServerBuilder AddDeveloperSigningCredential(IIdentityServerBuilder builder)
+    [Obsolete("This method is not recommended for production. It is only for development scenarios.")]
+    private static void AddDeveloperSigningCredential(IIdentityServerBuilder builder)
     {
-        return builder.AddDeveloperSigningCredential();
+        builder.AddDeveloperSigningCredential();
     }
+    
+    private static void CleanCookieConfig(this IServiceCollection services)
+    {
+        var cookieOptionsList = services
+            .Where(s => s.ServiceType == typeof(IConfigureOptions<CookieAuthenticationOptions>)).ToList();
+
+        var originalCookieOptions = cookieOptionsList.First();
+
+        foreach (var opt in cookieOptionsList)
+        {
+            services.Remove(opt);
+        }
+
+        services.Add(originalCookieOptions);
+
+        var cookiePostConfigOptionsList = services
+            .Where(s => s.ServiceType == typeof(IPostConfigureOptions<CookieAuthenticationOptions>)).ToList();
+
+        var originalCookiePostConfigOptions = cookiePostConfigOptionsList.First();
+
+        foreach (var opt in cookiePostConfigOptionsList)
+        {
+            services.Remove(opt);
+        }
+
+        services.Add(originalCookiePostConfigOptions);
+    }
+
 }
