@@ -223,7 +223,7 @@ public class AccountController : Controller
     public async Task<IActionResult> Logout(LogoutInputModel model)
     {
         // build a model so the logged out page knows what to display
-        var vm = await BuildLoggedOutViewModelAsync(model.LogoutId ?? throw new ArgumentNullException(nameof(model.LogoutId)));
+        var vm = await BuildLoggedOutViewModelAsync(model.LogoutId);
 
         if (User.Identity?.IsAuthenticated == true)
         {
@@ -240,12 +240,7 @@ public class AccountController : Controller
             // build a return URL so the upstream provider will redirect back
             // to us after the user has logged out. this allows us to then
             // complete our single sign-out processing.
-            if (vm.LogoutId is null)
-            {
-                throw new ArgumentNullException(nameof(vm.LogoutId));
-            }
             string url = Url.Action("Logout", new { logoutId = vm.LogoutId }) ?? throw new Exception("Failed to build URL");
-
             // this triggers a redirect to the external provider for sign-out
             return SignOut(new AuthenticationProperties { RedirectUri = url }, vm.ExternalAuthenticationScheme ?? string.Empty);
         }
@@ -392,7 +387,7 @@ public class AccountController : Controller
         return vm;
     }
 
-    private async Task<LoggedOutViewModel> BuildLoggedOutViewModelAsync(string logoutId)
+    private async Task<LoggedOutViewModel> BuildLoggedOutViewModelAsync(string? logoutId)
     {
         // get context information (client name, post logout redirect URI and iframe for federated signout)
         var logout = await _interaction.GetLogoutContextAsync(logoutId);

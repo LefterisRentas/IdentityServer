@@ -91,8 +91,14 @@ public class ExternalController : Controller
         }
 
         // lookup our user and external provider info
-        var (user, provider, providerUserId, _) = await FindUserFromExternalProviderAsync(result);
-
+        var (user, provider, providerUserId, claims) = await FindUserFromExternalProviderAsync(result);
+        if (user == null)
+        {
+            // this might be where you might initiate a custom workflow for user registration
+            // in this sample we don't show how that would be done, as our sample implementation
+            // simply auto-provisions new external user
+            user = await AutoProvisionUserAsync(provider, providerUserId, claims);
+        }
         // this allows us to collect any additional claims or properties
         // for the specific protocols used and store them in the local auth cookie.
         // this is typically used to store data needed for signout from those protocols.
@@ -139,7 +145,7 @@ public class ExternalController : Controller
         return Redirect(returnUrl);
     }
 
-    private async Task<(ApplicationUser user, string provider, string providerUserId, IEnumerable<Claim> claims)>
+    private async Task<(ApplicationUser? user, string provider, string providerUserId, IEnumerable<Claim> claims)>
         FindUserFromExternalProviderAsync(AuthenticateResult result)
     {
         var externalUser = result.Principal;

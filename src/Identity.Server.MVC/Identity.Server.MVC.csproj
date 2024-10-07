@@ -25,7 +25,7 @@
     <UpToDateCheckBuilt Include="tailwind.config.js" Set="Css" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Identity.Server.Extended\Identity.Server.Extended.csproj" />
+    <ProjectReference Include="..\Identity.Server.Extended\Identity.Server.Extended.csproj" />
   </ItemGroup>
 
   <Target Name="Tailwind" BeforeTargets="Build">
