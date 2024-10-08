@@ -215,6 +215,7 @@ public class ExternalController : Controller
         var user = new ApplicationUser
         {
             UserName = Guid.NewGuid().ToString(),
+            Email = filtered.FirstOrDefault(x => x.Type == JwtClaimTypes.Email)?.Value
         };
         var identityResult = await _userManager.CreateAsync(user);
         if (!identityResult.Succeeded) throw new Exception(identityResult.Errors.First().Description);
