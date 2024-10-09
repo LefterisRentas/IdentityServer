@@ -17,6 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddIdentityServerConfig();
 builder.AddDiConfig();
 builder.AddExtendedIdentityServerDiConfig();
+builder.AddExtendedIdentityServerAuthorizationConfig();
 
 if (builder.Environment.IsDevelopment())
 {
@@ -58,6 +59,11 @@ app.UseSwaggerUI(options =>
     options.DocumentTitle = $"API Documentation";
     options.SwaggerEndpoint($"/swagger/identity/swagger.json", "Identity Server");
 });
-app.MapClients();
+app.MapApiResourcesManagement();
+app.MapClientsManagement();
+app.MapIdentityResourcesManagement();
+app.MapRolesManagement();
+app.MapScopesManagement();
+app.MapUsersManagement();
 Log.Information("Starting host...");
 app.Run();

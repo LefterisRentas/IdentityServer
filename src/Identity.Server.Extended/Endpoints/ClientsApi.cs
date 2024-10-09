@@ -1,6 +1,5 @@
 ﻿using Identity.Server.Extended.Constants;
 using Identity.Server.Extended.Endpoints.Handlers;
-using Identity.Server.Extended.Security;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -8,37 +7,32 @@ using Microsoft.AspNetCore.Routing;
 namespace Identity.Server.Extended.Endpoints;
 
 /// <summary>
-/// Clients API endpoints.
+/// Clients Management API endpoints.
 /// </summary>
 public static class ClientsApi
 {
 
     /// <summary>
-    /// Maps the clients API.
+    /// Maps the clients management API.
     /// </summary>
     /// <param name="routes"></param>
     /// <returns></returns>
-    public static void MapClients(this IEndpointRouteBuilder routes)
+    public static void MapClientsManagement(this IEndpointRouteBuilder routes)
     {
         //var options = routes.ServiceProvider.GetService<IConfiguration>();
-        var readClientsGroup = routes.MapGroup(API_PREFIXES.CLIENTS_API_PREFIX);
+        var readClientsGroup = routes.MapGroup(API_PREFIXES.CLIENTS_MANAGEMENT_API_PREFIX);
         readClientsGroup.WithTags("Clients");
-        // Add security requirements, all incoming requests to this API *must*
-        // be authenticated with a valid user.
-        //TODO: Extract this authorization policy to a shared location.
-        readClientsGroup.RequireAuthorization(pb => pb
-            .RequireAuthenticatedUser()
-            .RequireAssertion(x => x.User.IsInRole(Roles.ClientsRead) 
-                                   || x.User.IsInRole(Roles.Admin) 
-                                   || x.User.HasClaim(ExtendedClaimTypes.Scope, ApiScopes.ClientsRead.Name)
-                                   || x.User.HasClaim(ExtendedClaimTypes.Scope, ApiScopes.IdentityServerAdminClient.Name)
-        ));
+        readClientsGroup.RequireAuthorization(AuthorizationPolicyConstants.CLIENT_MANAGEMENT_READ);
         readClientsGroup.WithOpenApi();
 
-        readClientsGroup.MapGet("", ClientHandler.GetClients)
-            .WithName(nameof(ClientHandler.GetClients));
+        readClientsGroup.MapGet("", ClientsHandler.GetClients)
+            .WithName(nameof(ClientsHandler.GetClients));
         
-        readClientsGroup.MapGet("/{clientId:minlength(1)}", ClientHandler.GetClientById)
-            .WithName(nameof(ClientHandler.GetClientById));
+        readClientsGroup.MapGet("/{clientId:minlength(1)}", ClientsHandler.GetClientById)
+            .WithName(nameof(ClientsHandler.GetClientById));
+        var writeClientsGroup = routes.MapGroup(API_PREFIXES.CLIENTS_MANAGEMENT_API_PREFIX);
+        writeClientsGroup.WithTags("Clients");
+        writeClientsGroup.RequireAuthorization(AuthorizationPolicyConstants.CLIENT_MANAGEMENT_WRITE);
+        writeClientsGroup.WithOpenApi();
     }
 }

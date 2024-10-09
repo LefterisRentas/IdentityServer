@@ -5,27 +5,26 @@ using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Identity.Server.Extended.Endpoints.Handlers;
 
-internal static class ClientHandler
+internal static class ClientsHandler
 {
     public static async Task<Results<Ok<List<Client>>, NotFound>> GetClients(IClientManager clientManager)
     {
         var result = await clientManager.GetClientsAsync();
-        var clientsList = result.ToList();
-        if (clientsList.Count is 0)
+        if (result.IsSuccess is false || result.Result is null || result.Result.Count() is 0)
         {
             return  TypedResults.NotFound();
         }
 
-        return TypedResults.Ok(clientsList.ToList());
+        return TypedResults.Ok(result.Result.ToList());
     }
     
     public static async Task<Results<Ok<Client>, NotFound>> GetClientById(IClientManager clientManager, string clientId)
     {
         var result = await clientManager.GetClientByIdAsync(clientId);
-        if (result is null)
+        if (result.IsSuccess is false)
         {
             return TypedResults.NotFound();
         }
-        return TypedResults.Ok(result);
+        return TypedResults.Ok(result.Result);
     }
 }

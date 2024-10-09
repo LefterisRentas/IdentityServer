@@ -17,8 +17,19 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.6" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Controllers\Management\ApiResources\" />
+    <Folder Include="Controllers\Management\Clients\" />
+    <Folder Include="Controllers\Management\IdentityResources\" />
+    <Folder Include="Controllers\Management\Roles\" />
+    <Folder Include="Controllers\Management\Scopes\" />
+    <Folder Include="Controllers\Management\Users\" />
     <Folder Include="Migrations\" />
-    <Folder Include="Views\Error\" />
+    <Folder Include="Views\Management\ApiResources\" />
+    <Folder Include="Views\Management\Clients\" />
+    <Folder Include="Views\Management\IdentityResources\" />
+    <Folder Include="Views\Management\Roles\" />
+    <Folder Include="Views\Management\Scopes\" />
+    <Folder Include="Views\Management\Users\" />
     <Folder Include="wwwroot\images\" />
   </ItemGroup>
   <ItemGroup>
