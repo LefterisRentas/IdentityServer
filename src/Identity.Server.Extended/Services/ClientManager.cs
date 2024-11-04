@@ -9,26 +9,30 @@ namespace Identity.Server.Extended.Services;
 /// <summary>
 /// <inheritdoc cref="IClientManager"/>
 /// </summary>
-public class ClientManager : IClientManager
+public class ClientManager(ConfigurationDbContext context) : IClientManager
 {
-    private readonly ConfigurationDbContext _context;
-    
-    /// <summary>
-    /// <inheritdoc cref="IClientManager"/>
-    /// </summary>
-    public ClientManager(ConfigurationDbContext context)
-    {
-        _context = context;
-    }
+    private readonly ConfigurationDbContext _context = context ?? throw new ArgumentNullException(nameof(context));
     
     /// <summary>
     /// <inheritdoc cref="IClientManager.GetClientsAsync"/>
     /// </summary>
     /// <returns></returns>
-    public Task<OperationResult<IEnumerable<Client>?>> GetClientsAsync()
+    public async Task<OperationResult<IEnumerable<Client>?>> GetClientsAsync(string search, int page = 1, int pageSize = 10)
     {
-        var clients = _context.Clients.AsNoTracking().AsEnumerable();
-        return Task.FromResult(OperationResult.Success(clients));
+        var clients = (await _context.Clients.AsNoTracking()
+            .Include(x => x.AllowedGrantTypes)
+            .Include(x => x.RedirectUris)
+            .Include(x => x.PostLogoutRedirectUris)
+            .Include(x => x.AllowedScopes)
+            .Include(x => x.ClientSecrets)
+            .Include(x => x.Claims)
+            .Include(x => x.IdentityProviderRestrictions)
+            .Include(x => x.AllowedCorsOrigins)
+            .Include(x => x.Properties)
+            .Where(x => string.IsNullOrWhiteSpace(search) || x.ClientId.Contains(search) || x.ClientName.Contains(search))
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize).ToListAsync()).AsEnumerable();
+        return OperationResult.Success(clients);
     }
 
     /// <summary>
@@ -36,7 +40,17 @@ public class ClientManager : IClientManager
     /// </summary>
     public Task<OperationResult<Client?>> GetClientByIdAsync(string clientId)
     {
-        var client = _context.Clients.AsNoTracking().FirstOrDefault(c => c.ClientId == clientId);
+        var client = _context.Clients.AsNoTracking()
+            .Include(x => x.AllowedGrantTypes)
+            .Include(x => x.RedirectUris)
+            .Include(x => x.PostLogoutRedirectUris)
+            .Include(x => x.AllowedScopes)
+            .Include(x => x.ClientSecrets)
+            .Include(x => x.Claims)
+            .Include(x => x.IdentityProviderRestrictions)
+            .Include(x => x.AllowedCorsOrigins)
+            .Include(x => x.Properties)
+            .FirstOrDefault(c => c.ClientId == clientId);
         return Task.FromResult(OperationResult.Success(client));
     }
 
@@ -144,6 +158,5 @@ public class ClientManager : IClientManager
         Create,
         Update,
         Delete
-    
     }
 }

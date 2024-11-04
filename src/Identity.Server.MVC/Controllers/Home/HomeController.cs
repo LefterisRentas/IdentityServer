@@ -7,6 +7,7 @@ using IdentityServer4.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -19,21 +20,24 @@ public class HomeController : Controller
     private readonly IIdentityServerInteractionService _interaction;
     private readonly IWebHostEnvironment _environment;
     private readonly ILogger _logger;
+    private readonly IConfiguration _configuration;
 
     public HomeController(
         IIdentityServerInteractionService interaction,
         IWebHostEnvironment environment,
-        ILogger<HomeController> logger)
+        ILogger<HomeController> logger,
+        IConfiguration configuration)
     {
         _interaction = interaction;
         _environment = environment;
         _logger = logger;
+        _configuration = configuration;
     }
 
     public Task<IActionResult> Index()
     {
 
-        if (_environment.IsDevelopment())
+        if (_configuration.GetValue<bool>("EnableHomepage"))
         {
             // only show in development
             return Task.FromResult<IActionResult>(View());

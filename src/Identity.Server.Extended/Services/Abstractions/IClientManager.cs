@@ -13,7 +13,7 @@ public interface IClientManager
     /// Get all clients from the <see cref="ConfigurationDbContext"/>
     /// </summary>
     /// <returns></returns>
-    Task<OperationResult<IEnumerable<Client>?>> GetClientsAsync();
+    Task<OperationResult<IEnumerable<Client>?>> GetClientsAsync(string search, int page = 1, int pageSize = 10);
     
     /// <summary>
     /// Get a client by its id.

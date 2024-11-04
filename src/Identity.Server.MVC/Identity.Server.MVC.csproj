@@ -12,8 +12,6 @@
     <PackageReference Include="Serilog.AspNetCore" Version="3.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.6" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.6" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.6" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.6" />
   </ItemGroup>
   <ItemGroup>
@@ -24,12 +22,12 @@
     <Folder Include="Controllers\Management\Scopes\" />
     <Folder Include="Controllers\Management\Users\" />
     <Folder Include="Migrations\" />
-    <Folder Include="Views\Management\ApiResources\" />
-    <Folder Include="Views\Management\Clients\" />
-    <Folder Include="Views\Management\IdentityResources\" />
-    <Folder Include="Views\Management\Roles\" />
-    <Folder Include="Views\Management\Scopes\" />
-    <Folder Include="Views\Management\Users\" />
+    <Folder Include="Views\ApiResources\" />
+    <Folder Include="Views\Clients\" />
+    <Folder Include="Views\IdentityResources\" />
+    <Folder Include="Views\Roles\" />
+    <Folder Include="Views\Scopes\" />
+    <Folder Include="Views\Users\" />
     <Folder Include="wwwroot\images\" />
   </ItemGroup>
   <ItemGroup>
