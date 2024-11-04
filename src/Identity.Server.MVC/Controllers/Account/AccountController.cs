@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Identity.Server.MVC.Controllers.Home;
 using Identity.Server.MVC.Models;
 using Identity.Server.MVC.Models.Error;
 using Identity.Server.MVC.Services.Abstractions;
@@ -151,46 +150,54 @@ public class AccountController : Controller
         var user = await _userManager.FindByNameAsync(model.Username);
         var claims = new List<Claim>
         {
-            new Claim("rememberme", model.RememberLogin.ToString()),
-            new Claim("returnUrl", model.ReturnUrl ?? string.Empty),
-            new Claim("userName", user?.UserName ?? string.Empty),
-            new Claim(JwtClaimTypes.Subject, user!.Id),
-            new Claim(ClaimTypes.Name, user.Id)
+            new("rememberme", model.RememberLogin.ToString()),
+            new("returnUrl", model.ReturnUrl ?? string.Empty),
+            new("userName", user?.UserName ?? string.Empty),
+            new(JwtClaimTypes.Subject, user!.Id),
+            new(ClaimTypes.Name, user.Id)
         };
         return claims;
     }
 
     private async Task<IActionResult?> DoLogin(LoginInputModel model, AuthorizationRequest context)
     {
-        ApplicationUser user;
-        var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberLogin, lockoutOnFailure: true);
-        if (result.Succeeded)
+        try
         {
-            user = await _userManager.FindByNameAsync(model.Username) ?? throw new Exception("User not found");
-            await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName, clientId: context.Client.ClientId));
-            if (context.IsNativeClient())
+            ApplicationUser user;
+            var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberLogin, lockoutOnFailure: true);
+            if (result.Succeeded)
             {
-                return this.LoadingPage("Redirect", model.ReturnUrl ?? "~/");
-            }
-            if (Url.IsLocalUrl(model.ReturnUrl))
-            {
-                return Redirect(model.ReturnUrl);
-            }
+                user = await _userManager.FindByNameAsync(model.Username) ?? throw new Exception("User not found");
+                await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName, clientId: context?.Client?.ClientId));
+                if (context?.IsNativeClient() ?? false)
+                {
+                    return this.LoadingPage("Redirect", model.ReturnUrl ?? "~/");
+                }
 
-            if (string.IsNullOrEmpty(model.ReturnUrl))
-            {
-                return Redirect("~/");
-            }
+                if (Url.IsLocalUrl(model.ReturnUrl))
+                {
+                    return Redirect(model.ReturnUrl);
+                }
 
-            throw new Exception("invalid return URL");
+                if (string.IsNullOrEmpty(model.ReturnUrl))
+                {
+                    return Redirect("~/");
+                }
+
+                throw new Exception("invalid return URL");
+            }
         }
-
-        var error = new InternalServerError500
+        catch (Exception ex)
         {
-            TraceId = HttpContext.TraceIdentifier,
-            Message = "An error occurred",
-        };
-        return View("InternalServerErrorStatus500", error);
+            _logger.LogError(ex, "An error occurred during login");
+            var error = new InternalServerError500
+            {
+                TraceId = HttpContext.TraceIdentifier,
+                Message = "An error occurred",
+            };
+            return View("InternalServerErrorStatus500", error);
+        }
+        return BadRequest();
     }
 
 
@@ -299,6 +306,10 @@ public class AccountController : Controller
     /*****************************************/
     private async Task<LoginViewModel> BuildLoginViewModelAsync(string returnUrl)
     {
+        if (string.IsNullOrWhiteSpace(returnUrl))
+        {
+            returnUrl = "~/";
+        }
         var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
         if (context?.IdP != null && await _schemeProvider.GetSchemeAsync(context.IdP) != null)
         {

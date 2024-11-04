@@ -12,7 +12,7 @@ public static class ApiScopes
     /// <summary>
     /// User Claims
     /// </summary>
-    public static readonly ICollection<string> UserClaims = new[]
+    private static readonly ICollection<string> UserClaims = new[]
     {
         ExtendedClaimTypes.DeviceId,
         ExtendedClaimTypes.IPAddress,

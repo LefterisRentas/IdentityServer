@@ -1,10 +1,14 @@
-﻿using Identity.Server.MVC.Events.EventSinks;
+﻿using Identity.Server.Extended.Services;
+using Identity.Server.MVC.Data;
+using Identity.Server.MVC.Events.EventSinks;
+using Identity.Server.MVC.Models;
 using Identity.Server.MVC.Options;
 using Identity.Server.MVC.Services;
 using Identity.Server.MVC.Services.Abstractions;
 using Identity.Server.MVC.Services.Mock;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -20,6 +24,7 @@ public static class DiConfig
         builder.Services.AddTransient<IEmailService, MockEmailService>();
         builder.Services.AddTransient<ISmsService, MockSmsService>();
         builder.Services.AddTransient<IProfilePictureService, ProfilePictureService>();
+        builder.Services.AddTransient<UserManager<ApplicationUser>, ExtendedUserManager<ApplicationUser, ApplicationDbContext>>();
         return builder;
     }
 }
