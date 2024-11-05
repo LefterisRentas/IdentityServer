@@ -12,7 +12,7 @@ public static class Clients
         new List<Client>
         {
             // interactive ASP.NET Core MVC client
-            new Client
+            new()
             {
                 ClientId = "mvc",
                 ClientSecrets = { new Secret("secret".Sha256()) },
@@ -33,7 +33,7 @@ public static class Clients
             },
             
             // machine to machine client
-            new Client
+            new()
             {
                 ClientId = "machine-client",
                 ClientSecrets = { new Secret("B0665A0D-A0A0-461E-A6E8-F0C365C18B99".Sha256()) },
@@ -64,7 +64,7 @@ public static class Clients
                 RequireConsent = true
             },
 
-            new Client
+            new()
             {
                 ClientId = "swagger-ui",
                 ClientSecrets = { new Secret("24B20CD5-0878-42DF-AC40-D45EE3E0E541".ToSha256()) },

@@ -34,5 +34,7 @@ public static class ClientsApi
         writeClientsGroup.WithTags("Clients");
         writeClientsGroup.RequireAuthorization(AuthorizationPolicyConstants.CLIENT_MANAGEMENT_WRITE);
         writeClientsGroup.WithOpenApi();
+        writeClientsGroup.MapPost("", ClientsHandler.CreateClient)
+            .WithName(nameof(ClientsHandler.CreateClient));
     }
 }

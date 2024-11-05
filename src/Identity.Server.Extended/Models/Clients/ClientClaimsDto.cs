@@ -4,7 +4,7 @@ public class ClientClaimsDto
 {
     public ClientClaimsDto()
     {
-        ClientClaims = new List<ClientClaimDto>();
+        ClientClaims = [];
     }
 
     public List<ClientClaimDto> ClientClaims { get; set; }

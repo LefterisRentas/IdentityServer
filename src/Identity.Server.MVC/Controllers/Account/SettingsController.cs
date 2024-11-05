@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
@@ -109,7 +110,8 @@ public class SettingsController(
         {
             foreach (var error in operationResult.ValidationErrors)
             {
-                ModelState.AddModelError(string.Empty, error);
+                var errors = string.Join(", ", error.Value);
+                ModelState.AddModelError(error.Key,errors);
             }
             return View("Index", model);
         }
@@ -155,7 +157,10 @@ public class SettingsController(
         user = await _userManager.FindByIdAsync(user.Id);
         if (user == null)
         {
-            return OperationResult.Failure("User not found.");
+            return OperationResult.Failure(new Dictionary<string, List<string>>()
+            {
+                {"User", new List<string> { "User not found." } }
+            });
         }
         return await UpdateUserClaims(user);
     }

@@ -18,6 +18,8 @@ public static class SeedingList
             new IdentityResources.Email(),
             new IdentityResources.Address(),
             new IdentityResources.Phone(),
+            Role,
+            Sub
         };
 
 
@@ -26,4 +28,20 @@ public static class SeedingList
     public static IEnumerable<Client> Clients => Security.Clients.ClientList;
         
     public static IEnumerable<ApiResource> ApiResources => Security.Resources.GetApiResources();
+    
+    public static IdentityResource Role => new()
+    {
+        Name = "role",
+        DisplayName = "User roles",
+        Description = "Access to your assigned roles.",
+        UserClaims = new List<string> { "role" } // Includes the "role" claim type
+    };
+
+    public static IdentityResource Sub => new()
+    {
+        Name = "sub",
+        DisplayName = "Subject",
+        Description = "Unique identifier for the user.",
+        UserClaims = new List<string> { "sub" } // Includes the "sub" claim type
+    };
 }

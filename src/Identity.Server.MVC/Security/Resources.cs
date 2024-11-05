@@ -7,9 +7,9 @@ namespace Identity.Server.MVC.Security;
 
 public static class Resources
 {
-    public static IEnumerable<ApiResource> GetApiResources() => new [] { ErpApi };
+    public static IEnumerable<ApiResource> GetApiResources() => new [] { TestApi };
     
-    private static readonly ApiResource ErpApi = new ApiResource()
+    private static readonly ApiResource TestApi = new()
     {
         Name = ApiScopes.TestApi.Name,
         Description = ApiScopes.TestApi.Description,

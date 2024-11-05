@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using Identity.Server.Extended.Data;
 using Identity.Server.Extended.Services;
 using Identity.Server.Extended.Services.Abstractions;
 using Microsoft.AspNetCore.Builder;
@@ -22,7 +23,7 @@ public static class DiConfig
     public static WebApplicationBuilder AddExtendedIdentityServerDiConfig(this WebApplicationBuilder builder)
     {
         // Configure options.
-        builder.Services.AddTransient<IClientManager, ClientManager>();
+        builder.Services.AddTransient<IClientManager, ClientManager<IdentityConfigurationDbContext>>();
         builder.Services.AddSwaggerGen(options =>
             {
                 options.SwaggerGenOptionDefaults();
