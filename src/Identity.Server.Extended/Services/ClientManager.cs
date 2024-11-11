@@ -1,22 +1,17 @@
 ﻿using System.Security.Claims;
-using Identity.Server.Extended.Data;
-using Identity.Server.Extended.Events;
 using Identity.Server.Extended.Models;
+using Identity.Server.Extended.Models.Clients;
 using Identity.Server.Extended.Services.Abstractions;
 using IdentityModel;
 using IdentityServer4.EntityFramework.Entities;
-using IdentityServer4.Services;
-using Microsoft.EntityFrameworkCore;
 
 namespace Identity.Server.Extended.Services;
 
 /// <summary>
 /// <inheritdoc cref="IClientManager"/>
 /// </summary>
-public class ClientManager<TConfigurationDbContext>(TConfigurationDbContext context, IEventService events) : IClientManager where TConfigurationDbContext : IdentityConfigurationDbContext
+public class ClientManager(IClientStore clientStore) : IClientManager
 {
-    private readonly TConfigurationDbContext _context = context ?? throw new ArgumentNullException(nameof(context));
-    private readonly IEventService _events = events ?? throw new ArgumentNullException(nameof(events));
     private static readonly List<string> StandardIdentityServerGrantTypes =
     [
         OidcConstants.GrantTypes.AuthorizationCode,
@@ -35,41 +30,17 @@ public class ClientManager<TConfigurationDbContext>(TConfigurationDbContext cont
     /// <inheritdoc cref="IClientManager.GetClientsAsync"/>
     /// </summary>
     /// <returns></returns>
-    public Task<OperationResult<IEnumerable<Client>?>> GetClientsAsync(string? search, int page = 1, int pageSize = 10)
+    public async Task<OperationResult<IEnumerable<Client>?>> GetClientsAsync(string? search, int page = 1, int pageSize = 10)
     {
-        var clients = _context.Clients.AsNoTracking()
-            .Include(x => x.AllowedGrantTypes)
-            .Include(x => x.RedirectUris)
-            .Include(x => x.PostLogoutRedirectUris)
-            .Include(x => x.AllowedScopes)
-            .Include(x => x.ClientSecrets)
-            .Include(x => x.Claims)
-            .Include(x => x.IdentityProviderRestrictions)
-            .Include(x => x.AllowedCorsOrigins)
-            .Include(x => x.Properties)
-            .Where(x => string.IsNullOrWhiteSpace(search) || x.ClientId.Contains(search) || x.ClientName.Contains(search))
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize).AsEnumerable();
-        return Task.FromResult(OperationResult.Success(clients));
+        return await clientStore.GetClientsAsync(search, page, pageSize);
     }
 
     /// <summary>
     /// <inheritdoc cref="IClientManager.GetClientByIdAsync"/>
     /// </summary>
-    public Task<OperationResult<Client?>> GetClientByIdAsync(string clientId)
+    public async Task<OperationResult<Client?>> GetClientByIdAsync(string clientId)
     {
-        var client = _context.Clients.AsNoTracking()
-            .Include(x => x.AllowedGrantTypes)
-            .Include(x => x.RedirectUris)
-            .Include(x => x.PostLogoutRedirectUris)
-            .Include(x => x.AllowedScopes)
-            .Include(x => x.ClientSecrets)
-            .Include(x => x.Claims)
-            .Include(x => x.IdentityProviderRestrictions)
-            .Include(x => x.AllowedCorsOrigins)
-            .Include(x => x.Properties)
-            .FirstOrDefault(c => c.ClientId == clientId);
-        return Task.FromResult(client is null ? OperationResult.Failure<Client?>(new Dictionary<string, List<string>> { { "ClientId", ["Client not found."] } }) : OperationResult.Success(client));
+        return await clientStore.GetClientByIdAsync(clientId);
     }
 
     /// <summary>
@@ -83,30 +54,21 @@ public class ClientManager<TConfigurationDbContext>(TConfigurationDbContext cont
             return OperationResult.Failure<Client?>(new Dictionary<string, List<string>> { { "validationErrors", validationResult.ValidationErrors.ToList() } });
         }
 
-        if (_context.Clients.Any(c => c.ClientId == client.ClientId))
-        {
-            return OperationResult.Failure<Client?>(new Dictionary<string, List<string>> { { "ClientId", ["ClientId Already Exists."] } });
-        }
-
-        client.Id = 0;
-        _context.Clients.Add(client);
-        await _context.SaveChangesAsync();
-        await _events.RaiseAsync(new ClientCreationEvent(identity) { ClientId = client.ClientId, ClientName = client.ClientName });
-        return OperationResult.Success(client);
+        return await clientStore.CreateClientAsync(client, identity);
     }
 
     /// <summary>
     /// <inheritdoc cref="IClientManager.UpdateClientAsync"/>
     /// </summary>
-    public async Task<OperationResult<Client>> UpdateClientAsync(Client client, ClaimsPrincipal identity)
+    public async Task<OperationResult<Client>> UpdateClientAsync(Client client, ClaimsPrincipal identity, bool updateClaims = false, bool updateProperties = false)
     {
         var validationResult = await ValidateClient(client, ClientAction.Update);
         if (!validationResult.IsValid)
         {
-            return OperationResult.Failure<Client>(new Dictionary<string, List<string>> { { "validationErrors", validationResult.ValidationErrors.ToList() } });;
+            return OperationResult.Failure<Client>(new Dictionary<string, List<string>> { { "validationErrors", validationResult.ValidationErrors.ToList() } });
         }
 
-        throw new NotImplementedException();
+        return await clientStore.UpdateClientAsync(client, identity, updateClaims, updateProperties);
     }
 
     /// <summary>
@@ -114,21 +76,46 @@ public class ClientManager<TConfigurationDbContext>(TConfigurationDbContext cont
     /// </summary>
     public async Task<OperationResult> DeleteClientAsync(string clientId, ClaimsPrincipal identity)
     {
+        // Optional: validate deletion if specific checks are needed
         var validationResult = await ValidateClient(new Client { ClientId = clientId }, ClientAction.Delete);
         if (!validationResult.IsValid)
         {
             return OperationResult.Failure(new Dictionary<string, List<string>> { { "validationErrors", validationResult.ValidationErrors.ToList() } });
         }
 
-        var client = _context.Clients.FirstOrDefault(c => c.ClientId == clientId);
-        if (client is null)
-        {
-            return OperationResult.Failure(new Dictionary<string, List<string>> { { "ClientId", ["Client not found."] } });
-        }
+        return await clientStore.DeleteClientAsync(clientId, identity);
+    }
 
-        _context.Clients.Remove(client);
-        await _context.SaveChangesAsync();
-        return OperationResult.Success();
+    /// <summary>
+    /// <inheritdoc cref="IClientManager.GetClientSecretsAsync"/>
+    /// </summary>
+    public async Task<OperationResult<ClientSecretsDto>> GetClientSecretsAsync(string clientId, int pageSize = 10, int page = 1)
+    {
+        return await clientStore.GetClientSecretsAsync(clientId, pageSize, page);
+    }
+
+    /// <summary>
+    /// <inheritdoc cref="IClientManager.GetClientSecretAsync"/>
+    /// </summary>
+    public async Task<OperationResult<ClientSecretDto>> GetClientSecretAsync(int secretId)
+    {
+        return await clientStore.GetClientSecretAsync(secretId);
+    }
+
+    /// <summary>
+    /// <inheritdoc cref="IClientManager.AddClientSecretAsync"/>
+    /// </summary>
+    public async Task<OperationResult<ClientSecretDto>> AddClientSecretAsync(string clientId, ClientSecretDto clientSecretDto, ClaimsPrincipal identity)
+    {
+        return await clientStore.AddClientSecretAsync(clientId, clientSecretDto, identity);
+    }
+
+    /// <summary>
+    /// <inheritdoc cref="IClientManager.RemoveClientSecretAsync"/>
+    /// </summary>
+    public async Task<OperationResult<ClientSecretDto>> RemoveClientSecretAsync(string clientId, int secretId, ClaimsPrincipal identity)
+    {
+        return await clientStore.RemoveClientSecretAsync(clientId, secretId, identity);
     }
 
     private async Task<ValidationResult> ValidateClient(Client client, ClientAction action)
@@ -179,8 +166,8 @@ public class ClientManager<TConfigurationDbContext>(TConfigurationDbContext cont
 
         // Validate AllowedScopes: check if each requested scope exists
         // Retrieve API scopes and identity resource scopes, then combine them
-        var apiScopes = await _context.ApiScopes.Select(s => s.Name).ToListAsync();
-        var identityResources = await _context.IdentityResources.Select(r => r.Name).ToListAsync();
+        var apiScopes = (await clientStore.GetApiScopesAsync()).Result?.Select(s => s.Name) ?? [];
+        var identityResources = (await clientStore.GetIdentityResourcesAsync()).Result?.Select(s => s.Name) ?? [];
 
         // Combine the two lists into one list of all available scopes
         var allScopes = apiScopes.Concat(identityResources).ToList();
@@ -192,7 +179,7 @@ public class ClientManager<TConfigurationDbContext>(TConfigurationDbContext cont
         }
 
         // Validate AllowedGrantTypes: check if each grant type is valid
-        var validGrantTypes = _context.GrantTypes.Select(g => g.Type).ToList();
+        var validGrantTypes = (await clientStore.GetGrantTypesAsync()).Result?.Select(g => g.Type).ToList() ?? [];
         if (validGrantTypes.Count == 0)
         {
             validGrantTypes = StandardIdentityServerGrantTypes;

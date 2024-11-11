@@ -23,7 +23,8 @@ public static class DiConfig
     public static WebApplicationBuilder AddExtendedIdentityServerDiConfig(this WebApplicationBuilder builder)
     {
         // Configure options.
-        builder.Services.AddTransient<IClientManager, ClientManager<IdentityConfigurationDbContext>>();
+        builder.Services.AddTransient<IClientStore, ClientStore<IdentityConfigurationDbContext>>();
+        builder.Services.AddTransient<IClientManager, ClientManager>();
         builder.Services.AddSwaggerGen(options =>
             {
                 options.SwaggerGenOptionDefaults();

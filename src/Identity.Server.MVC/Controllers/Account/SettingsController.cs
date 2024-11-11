@@ -119,7 +119,7 @@ public class SettingsController(
         if (user.Email != model.Email)
         {
             var token = await _userManager.GenerateChangeEmailTokenAsync(user, model.Email ?? throw new InvalidOperationException("Email is required."));
-            await _emailService.SendEmailAsync(new[] { model.Email }, null, null, "Confirm your email", $"Your confirmation code is {token}");
+            await _emailService.SendEmailAsync([model.Email], null, null, "Confirm your email", $"Your confirmation code is {token}");
             TempData["NewEmail"] = model.Email;
             return RedirectToAction("ConfirmEmailChange");
         }

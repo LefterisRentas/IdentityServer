@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using Identity.Server.Extended.Data.Entities;
 using Identity.Server.Extended.Models;
 using Identity.Server.Extended.Models.Clients;
 using IdentityServer4.EntityFramework.DbContexts;
@@ -6,17 +7,14 @@ using IdentityServer4.EntityFramework.Entities;
 
 namespace Identity.Server.Extended.Services.Abstractions;
 
-/// <summary>
-/// The client manager.
-/// </summary>
-public interface IClientManager
+public interface IClientStore
 {
     /// <summary>
     /// Get all clients from the <see cref="ConfigurationDbContext"/>
     /// </summary>
     /// <returns></returns>
     Task<OperationResult<IEnumerable<Client>?>> GetClientsAsync(string? search, int page = 1, int pageSize = 10);
-    
+
     /// <summary>
     /// Get a client by its id.
     /// </summary>
@@ -48,7 +46,7 @@ public interface IClientManager
     /// <param name="identity">The user performing the deletion, represented by the current user's claims.</param>
     /// <returns>An <see cref="OperationResult"/> indicating success or failure of the deletion operation.</returns>
     Task<OperationResult> DeleteClientAsync(string clientId, ClaimsPrincipal identity);
-    
+
     /// <summary>
     /// Retrieves a paginated list of secrets associated with a specific client.
     /// </summary>
@@ -83,9 +81,9 @@ public interface IClientManager
     /// <returns>An <see cref="OperationResult{ClientSecretDto}"/> indicating the success or failure of the removal operation.</returns>
     Task<OperationResult<ClientSecretDto>> RemoveClientSecretAsync(string clientId, int secretId, ClaimsPrincipal identity);
     
-    // Task<ClientClaim> AddClientClaimAsync(string clientId, ClientClaimDto clientClaimDto, ClaimsPrincipal identity);
-    //
-    // Task<ClientClaim> UpdateClientClaimAsync(string clientId, ClientClaimDto clientClaimDto, ClaimsPrincipal identity);
-    //
-    // Task<ClientClaim> DeleteClientClaimAsync(string clientId, string claimType, ClaimsPrincipal identity);
+    Task<OperationResult<List<GrantType>>> GetGrantTypesAsync();
+    
+    Task<OperationResult<List<ApiScope>>> GetApiScopesAsync();
+    
+    Task<OperationResult<List<ApiResource>>> GetIdentityResourcesAsync();
 }
