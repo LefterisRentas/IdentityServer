@@ -56,7 +56,7 @@ public interface IClientManager
     /// <param name="pageSize">The number of secrets to retrieve per page.</param>
     /// <param name="page">The page number to retrieve.</param>
     /// <returns>An <see cref="OperationResult{ClientSecretsDto}"/> containing the list of client secrets, along with pagination details.</returns>
-    Task<OperationResult<ClientSecretsDto>> GetClientSecretsAsync(string clientId, int pageSize = 10, int page = 1);
+    Task<OperationResult<ClientSecretsDto>> GetClientSecretsAsync(int clientId, int pageSize = 10, int page = 1);
 
     /// <summary>
     /// Retrieves a specific client secret by its unique identifier.

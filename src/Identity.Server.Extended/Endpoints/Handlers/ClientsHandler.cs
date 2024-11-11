@@ -66,9 +66,9 @@ internal static class ClientsHandler
         return TypedResults.NoContent();
     }
     
-    internal static async Task<Results<Ok<ClientSecretsDto>, NotFound>> GetClientSecrets(IClientManager clientManager, string clientId, int page = 1, int pageSize = 10)
+    internal static async Task<Results<Ok<ClientSecretsDto>, NotFound>> GetClientSecrets(IClientManager clientManager, int clientId, int pageSize = 10, int page = 1)
     {
-        var result = await clientManager.GetClientSecretsAsync(clientId, page, pageSize);
+        var result = await clientManager.GetClientSecretsAsync(clientId, pageSize, page);
         if (result.IsSuccess is false || result.Result is null)
         {
             return TypedResults.NotFound();
