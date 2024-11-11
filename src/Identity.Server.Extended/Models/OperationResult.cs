@@ -1,141 +1,106 @@
-﻿namespace Identity.Server.Extended.Models;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
+
+namespace Identity.Server.Extended.Models;
 
 /// <summary>
-/// Operation result class for returning results of operations.
+/// Represents the result of an operation, including success state and validation errors.
 /// </summary>
-/// <typeparam name="T"></typeparam>
 public class OperationResult
 {
-    /// <summary>
-    /// The result of the operation.
-    /// </summary>
+    /// <summary>The result of the operation.</summary>
     public object? Result { get; }
 
-    /// <summary>
-    /// If the operation was successful.
-    /// </summary>
+    /// <summary>If the operation was successful.</summary>
     public bool IsSuccess { get; private set; }
 
-    /// <summary>
-    /// The validation errors.
-    /// </summary>
-    public List<string> ValidationErrors { get; } = new();
+    /// <summary>The validation errors associated with the operation.</summary>
+    public Dictionary<string, List<string>> ValidationErrors { get; } = new();
 
-    /// <summary>
-    /// Create a new operation result.
-    /// </summary>
-    /// <param name="result"></param>
-    /// <param name="isSuccess"></param>
+    /// <summary>Creates a new operation result.</summary>
+    /// <param name="result">The result object of the operation.</param>
+    /// <param name="isSuccess">Indicates if the operation was successful.</param>
     protected OperationResult(object? result, bool isSuccess)
     {
         Result = result;
         IsSuccess = isSuccess;
     }
 
-    /// <summary>
-    /// Create a new operation result.
-    /// </summary>
-    /// <param name="validationErrors"></param>
-    protected OperationResult(List<string>? validationErrors = null)
+    /// <summary>Creates a new operation result with validation errors.</summary>
+    /// <param name="validationErrors">A dictionary of validation errors.</param>
+    protected OperationResult(Dictionary<string, List<string>>? validationErrors = null)
     {
-        ValidationErrors = validationErrors ?? new List<string>();
+        if (validationErrors != null)
+        {
+            ValidationErrors = validationErrors;
+        }
         IsSuccess = false;
     }
 
-    /// <summary>
-    /// Create a new success result.
-    /// </summary>
-    /// <param name="result"></param>
-    /// <returns></returns>
+    /// <summary>Creates a success result with a specified result.</summary>
     public static OperationResult<T?> Success<T>(T? result)
     {
         return new OperationResult<T?>(result, true);
     }
-    
-    /// <summary>
-    /// Create a new success result.
-    /// </summary>
-    /// <returns></returns>
+
+    /// <summary>Creates a generic success result.</summary>
     public static OperationResult Success()
     {
-        return new OperationResult(default, true);
+        return new OperationResult(null, true);
     }
 
-    /// <summary>
-    /// Create a new failure result.
-    /// </summary>
-    /// <param name="validationErrors"></param>
-    /// <returns></returns>
-    public static OperationResult<T> Failure<T>(List<string> validationErrors)
-    {
-        return new OperationResult<T>(validationErrors);
-    }
-    
-    /// <summary>
-    /// Create a new failure result.
-    /// </summary>
-    /// <param name="validationErrors"></param>
-    /// <returns></returns>
-    public static OperationResult<T> Failure<T>(params string[] validationErrors)
-    {
-        return new OperationResult<T>(new List<string>(validationErrors));
-    }
-    
-    /// <summary>
-    /// Create a new failure result.
-    /// </summary>
-    /// <param name="validationErrors"></param>
-    /// <returns></returns>
-    public static OperationResult Failure(List<string> validationErrors)
+    /// <summary>Creates a failure result with validation errors.</summary>
+    public static OperationResult Failure(Dictionary<string, List<string>> validationErrors)
     {
         return new OperationResult(validationErrors);
     }
     
-    /// <summary>
-    /// Create a new failure result.
-    /// </summary>
-    /// <param name="validationErrors"></param>
-    /// <returns></returns>
-    public static OperationResult Failure(params string[] validationErrors)
+    /// <summary>Creates a failure result with validation errors.</summary>
+    public static OperationResult<T> Failure<T>(Dictionary<string, List<string>> validationErrors)
     {
-        return new OperationResult(new List<string>(validationErrors));
+        return new OperationResult<T>(validationErrors);
     }
 
-    /// <summary>
-    /// If the result has validation errors.
-    /// </summary>
-    /// <returns></returns>
+    /// <summary>Checks if the result has any validation errors.</summary>
     public bool HasErrors()
     {
         return ValidationErrors.Count > 0;
     }
+
+    /// <summary>
+    /// Returns the validation errors as a <see cref="ValidationProblem"/>. 
+    /// If no errors or the operation was successful, returns null.
+    /// </summary>
+    public ValidationProblem? ToValidationProblem()
+    {
+        if (!HasErrors() || IsSuccess)
+        {
+            return null;
+        }
+
+        // Directly use ValidationErrors for field-specific errors
+        return TypedResults.ValidationProblem(
+            ValidationErrors.ToDictionary(k => k.Key, v => v.Value.ToArray())
+        );
+    }
 }
 
 /// <summary>
-/// <see cref="OperationResult"/> with a result of type <see cref="T"/>
+/// Represents the result of an operation with a specified result type.
 /// </summary>
-/// <typeparam name="T"></typeparam>
+/// <typeparam name="T">The type of the operation result.</typeparam>
 public class OperationResult<T> : OperationResult
 {
-    /// <summary>
-    /// The result of the operation.
-    /// </summary>
+    /// <summary>The result of the operation.</summary>
     public new T? Result => (T?)base.Result;
 
-    /// <summary>
-    /// Create a new operation result.
-    /// </summary>
-    /// <param name="result"></param>
-    /// <param name="isSuccess"></param>
+    /// <summary>Creates a new operation result.</summary>
     public OperationResult(T result, bool isSuccess) : base(result, isSuccess)
     {
     }
 
-    /// <summary>
-    /// Create a new operation result.
-    /// </summary>
-    /// <param name="validationErrors"></param>
-    public OperationResult(List<string> validationErrors) : base(validationErrors)
+    /// <summary>Creates a new operation result with validation errors.</summary>
+    public OperationResult(Dictionary<string, List<string>> validationErrors) : base(validationErrors)
     {
     }
 }

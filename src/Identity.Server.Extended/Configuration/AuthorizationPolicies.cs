@@ -102,6 +102,21 @@ public static class AuthorizationPolicies
                                        || x.User.HasClaim(ExtendedClaimTypes.Scope, ApiScopes.UsersWrite.Name)
                                        || x.User.HasClaim(ExtendedClaimTypes.Scope, ApiScopes.IdentityServerAdminClient.Name)
                 ));
+            authOptions.AddPolicy(AuthorizationPolicyConstants.CAN_VIEW_MANAGEMENT_PAGE, pb => pb
+                .RequireAuthenticatedUser()
+                .RequireAssertion(x => x.User.IsInRole(Roles.Admin)
+                                       || x.User.IsInRole(Roles.RolesApiRead)
+                                       || x.User.IsInRole(Roles.ScopesApiRead)
+                                       || x.User.IsInRole(Roles.UsersApiRead)
+                                       || x.User.IsInRole(Roles.ClientsApiRead)
+                                       || x.User.IsInRole(Roles.ResourcesApiRead)
+                                       || x.User.HasClaim(ExtendedClaimTypes.Scope, ApiScopes.RolesRead.Name)
+                                       || x.User.HasClaim(ExtendedClaimTypes.Scope, ApiScopes.ScopesRead.Name)
+                                       || x.User.HasClaim(ExtendedClaimTypes.Scope, ApiScopes.UsersRead.Name)
+                                       || x.User.HasClaim(ExtendedClaimTypes.Scope, ApiScopes.ClientsRead.Name)
+                                       || x.User.HasClaim(ExtendedClaimTypes.Scope, ApiScopes.ResourcesRead.Name)
+                                       || x.User.HasClaim(ExtendedClaimTypes.Scope, ApiScopes.IdentityServerAdminClient.Name)
+                ));
         });
     }
 }

@@ -4,6 +4,9 @@ using IdentityServer4.Events;
 
 namespace Identity.Server.Extended.Events;
 
+/// <summary>
+/// Event for when a client is created
+/// </summary>
 public class ClientCreationEvent : Event
 {
     private const string Client = nameof(Client);
@@ -22,19 +25,19 @@ public class ClientCreationEvent : Event
     /// The creator of the client
     /// </summary>
     public ClaimsPrincipal Creator { get; set; }
-    
+
     /// <summary>
     /// Constructor for <see cref="ClientCreationEvent"/>
     /// </summary>
     /// <param name="clientId">The client id</param>
-    public ClientCreationEvent(string clientId, string clientName, ClaimsPrincipal creator) : this()
+    /// <param name="clientName"></param>
+    /// <param name="creator"></param>
+    public ClientCreationEvent(ClaimsPrincipal creator) : this()
     {
-        ClientId = clientId;
         Creator = creator;
-        ClientName = clientName;
     }
     
-    private ClientCreationEvent() : base(Client, "Client Created", EventTypes.Information, ExtendedEventIds.ClientCreation)
+    private ClientCreationEvent() : base(Client, "Client Created", EventTypes.Information, ExtendedEventIds.CLIENT_CREATION)
     {
     }
 }

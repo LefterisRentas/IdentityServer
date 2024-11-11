@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
@@ -109,7 +110,8 @@ public class SettingsController(
         {
             foreach (var error in operationResult.ValidationErrors)
             {
-                ModelState.AddModelError(string.Empty, error);
+                var errors = string.Join(", ", error.Value);
+                ModelState.AddModelError(error.Key,errors);
             }
             return View("Index", model);
         }
@@ -117,7 +119,7 @@ public class SettingsController(
         if (user.Email != model.Email)
         {
             var token = await _userManager.GenerateChangeEmailTokenAsync(user, model.Email ?? throw new InvalidOperationException("Email is required."));
-            await _emailService.SendEmailAsync(new[] { model.Email }, null, null, "Confirm your email", $"Your confirmation code is {token}");
+            await _emailService.SendEmailAsync([model.Email], null, null, "Confirm your email", $"Your confirmation code is {token}");
             TempData["NewEmail"] = model.Email;
             return RedirectToAction("ConfirmEmailChange");
         }
@@ -155,7 +157,10 @@ public class SettingsController(
         user = await _userManager.FindByIdAsync(user.Id);
         if (user == null)
         {
-            return OperationResult.Failure("User not found.");
+            return OperationResult.Failure(new Dictionary<string, List<string>>()
+            {
+                {"User", new List<string> { "User not found." } }
+            });
         }
         return await UpdateUserClaims(user);
     }

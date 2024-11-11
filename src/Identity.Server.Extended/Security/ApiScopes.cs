@@ -1,5 +1,6 @@
 ﻿using Identity.Server.Extended.Constants;
 using IdentityModel;
+using IdentityServer4;
 using IdentityServer4.Models;
 
 namespace Identity.Server.Extended.Security;
@@ -37,24 +38,36 @@ public static class ApiScopes
         Name = "test-api",
         // - Friendly Name in the Api's appsettings.json
         DisplayName = "Test API",
-        
+
         UserClaims = UserClaims,
-        
+
         Description = "Access to the Test API",
     };
-    
+
     /// <summary>
     /// Get Api Scopes
     /// </summary>
     /// <returns></returns>
     public static ApiScope[] GetApiScopes()
     {
-        return new[]
-        {
-            TestApi, IdentityServerAdminClient, ClientsWrite, ClientsRead, UsersWrite, UsersRead, ScopesWrite, ScopesRead, ResourcesWrite, ResourcesRead, RolesWrite, RolesRead
-        };
+        return
+        [
+            OfflineAccess,
+            TestApi,
+            IdentityServerAdminClient,
+            ClientsWrite,
+            ClientsRead,
+            UsersWrite,
+            UsersRead,
+            ScopesWrite,
+            ScopesRead,
+            ResourcesWrite,
+            ResourcesRead,
+            RolesWrite,
+            RolesRead
+        ];
     }
-    
+
     /// <summary>
     /// Identity Server Admin Client Scope Gives Access To All The Admin Management APIs
     /// </summary>
@@ -65,7 +78,7 @@ public static class ApiScopes
         Description = "Access to the Identity Server Admin Client",
         UserClaims = UserClaims
     };
-    
+
     /// <summary>
     /// Clients Write Scope Is Needed For The Client Management API Only When A System Client Is Requesting To Write To The Clients Resource
     /// </summary>
@@ -81,8 +94,8 @@ public static class ApiScopes
                 UserClaims = UserClaims
             };
         }
-    } 
-    
+    }
+
     /// <summary>
     /// Clients Read Scope Is Needed For The Client Management API Only When A System Client Is Requesting To Read From The Clients Resource
     /// </summary>
@@ -99,7 +112,7 @@ public static class ApiScopes
             };
         }
     }
-    
+
     /// <summary>
     /// Users Write Scope Is Needed For The User Management API Only When A System Client Is Requesting To Write To The Users Resource
     /// </summary>
@@ -116,7 +129,7 @@ public static class ApiScopes
             };
         }
     }
-    
+
     /// <summary>
     /// Users Read Scope Is Needed For The User Management API Only When A System Client Is Requesting To Read From The Users Resource
     /// </summary>
@@ -133,7 +146,7 @@ public static class ApiScopes
             };
         }
     }
-    
+
     /// <summary>
     /// Scopes Write Scope Is Needed For The Scope Management API Only When A System Client Is Requesting To Write To The Scopes Resource
     /// </summary>
@@ -150,7 +163,7 @@ public static class ApiScopes
             };
         }
     }
-    
+
     /// <summary>
     /// Scopes Read Scope Is Needed For The Scope Management API Only When A System Client Is Requesting To Read From The Scopes Resource
     /// </summary>
@@ -167,7 +180,7 @@ public static class ApiScopes
             };
         }
     }
-    
+
     /// <summary>
     /// Resources Write Scope Is Needed For The Resource Management API Only When A System Client Is Requesting To Write To The Resources Resource
     /// </summary>
@@ -184,7 +197,7 @@ public static class ApiScopes
             };
         }
     }
-    
+
     /// <summary>
     /// Resources Read Scope Is Needed For The Resource Management API Only When A System Client Is Requesting To Read From The Resources Resource
     /// </summary>
@@ -201,7 +214,7 @@ public static class ApiScopes
             };
         }
     }
-    
+
     /// <summary>
     /// Roles Write Scope Is Needed For The Role Management API Only When A System Client Is Requesting To Write To The Roles Resource
     /// </summary>
@@ -218,7 +231,7 @@ public static class ApiScopes
             };
         }
     }
-    
+
     /// <summary>
     /// Roles Read Scope Is Needed For The Role Management API Only When A System Client Is Requesting To Read From The Roles Resource
     /// </summary>
@@ -235,4 +248,16 @@ public static class ApiScopes
             };
         }
     }
+    
+    /// <summary>
+    /// Scope to allow offline access, enabling refresh tokens for background access when the user is offline.
+    /// </summary>
+    public static ApiScope OfflineAccess => new()
+    {
+        Name = IdentityServerConstants.StandardScopes.OfflineAccess,
+        DisplayName = "Offline access",
+        Description = "Allow the application to access the API on your behalf when you are offline.",
+        Emphasize = true, // Emphasizes in UI as it involves background access.
+        ShowInDiscoveryDocument = true // Displays in discovery document to inform users about offline access.
+    };
 }

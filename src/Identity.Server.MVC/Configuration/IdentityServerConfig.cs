@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using Identity.Server.Extended.Data;
 using Identity.Server.MVC.Data;
 using Identity.Server.MVC.Models;
 using IdentityServer4;
@@ -51,7 +52,7 @@ public static class IdentityServerConfig
                 options.EnableTokenCleanup = true;
                 options.TokenCleanupInterval = 3600; // interval in seconds (default is 3600)
             })
-            .AddConfigurationStore(options =>
+            .AddConfigurationStore<IdentityConfigurationDbContext>(options =>
             {
                 options.ConfigureDbContext = identityServerBuilder =>
                     identityServerBuilder.UseSqlServer(builder.Configuration.GetConnectionString("ConfigurationStoreConnection"),

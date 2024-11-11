@@ -34,5 +34,11 @@ public static class ClientsApi
         writeClientsGroup.WithTags("Clients");
         writeClientsGroup.RequireAuthorization(AuthorizationPolicyConstants.CLIENT_MANAGEMENT_WRITE);
         writeClientsGroup.WithOpenApi();
+        writeClientsGroup.MapPost("", ClientsHandler.CreateClient)
+            .WithName(nameof(ClientsHandler.CreateClient));
+        writeClientsGroup.MapPut("", ClientsHandler.UpdateClient)
+            .WithName(nameof(ClientsHandler.UpdateClient));
+        writeClientsGroup.MapDelete("/{clientId:minlength(1)}", ClientsHandler.DeleteClient)
+            .WithName(nameof(ClientsHandler.DeleteClient));
     }
 }
