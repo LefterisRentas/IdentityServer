@@ -65,4 +65,44 @@ internal static class ClientsHandler
         }
         return TypedResults.NoContent();
     }
+    
+    internal static async Task<Results<Ok<ClientSecretsDto>, NotFound>> GetClientSecrets(IClientManager clientManager, int clientId, int pageSize = 10, int page = 1)
+    {
+        var result = await clientManager.GetClientSecretsAsync(clientId, pageSize, page);
+        if (result.IsSuccess is false || result.Result is null)
+        {
+            return TypedResults.NotFound();
+        }
+        return TypedResults.Ok(result.Result);
+    }
+    
+    internal static async Task<Results<Ok<ClientSecretDto>, ValidationProblem>> GetClientSecret(IClientManager clientManager, int secretId)
+    {
+        var result = await clientManager.GetClientSecretAsync(secretId);
+        if (result.IsSuccess is false && result.ValidationErrors.Count > 0 || result.Result is null)
+        {
+            return result.ToValidationProblem() ?? throw new InvalidOperationException("Tried to get a client secret but the operation failed.");
+        }
+        return TypedResults.Ok(result.Result);
+    }
+    
+    internal static async Task<Results<CreatedAtRoute<ClientSecretDto>, ValidationProblem>> CreateClientSecret(IClientManager clientManager, string clientId, ClientSecretDto clientSecretDto, ClaimsPrincipal claimsPrincipal)
+    {
+        var result = await clientManager.AddClientSecretAsync(clientId, clientSecretDto, claimsPrincipal);
+        if (result.IsSuccess is false && result.ValidationErrors.Count > 0 || result.Result is null)
+        {
+            return result.ToValidationProblem() ?? throw new InvalidOperationException("Tried to create a client secret but the operation failed.");
+        }
+        return TypedResults.CreatedAtRoute(result.Result, nameof(GetClientSecret), new { secretId = result.Result.Id });
+    }
+    
+    internal static async Task<Results<NoContent, ValidationProblem>> DeleteClientSecret(IClientManager clientManager, string cliendId, int secretId, ClaimsPrincipal claimsPrincipal)
+    {
+        var result = await clientManager.RemoveClientSecretAsync(cliendId, secretId, claimsPrincipal);
+        if (result.IsSuccess is false && result.ValidationErrors.Count > 0)
+        {
+            return result.ToValidationProblem() ?? throw new InvalidOperationException("Tried to delete a client secret but the operation failed.");
+        }
+        return TypedResults.NoContent();
+    }
 }

@@ -179,10 +179,10 @@ internal class ClientStore<TConfigurationDbContext>(
     /// <summary>
     /// <inheritdoc cref="IClientStore.GetClientSecretsAsync"/>
     /// </summary>
-    public Task<OperationResult<ClientSecretsDto>> GetClientSecretsAsync(string clientId, int pageSize = 10, int page = 1)
+    public Task<OperationResult<ClientSecretsDto>> GetClientSecretsAsync(int clientId, int pageSize = 10, int page = 1)
     {
         var clientSecrets = _context.ClientSecrets.AsNoTracking()
-            .Where(x => x.Client.ClientId == clientId)
+            .Where(x => x.ClientId == clientId)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToList();

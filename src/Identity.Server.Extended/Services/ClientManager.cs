@@ -89,7 +89,7 @@ public class ClientManager(IClientStore clientStore) : IClientManager
     /// <summary>
     /// <inheritdoc cref="IClientManager.GetClientSecretsAsync"/>
     /// </summary>
-    public async Task<OperationResult<ClientSecretsDto>> GetClientSecretsAsync(string clientId, int pageSize = 10, int page = 1)
+    public async Task<OperationResult<ClientSecretsDto>> GetClientSecretsAsync(int clientId, int pageSize = 10, int page = 1)
     {
         return await clientStore.GetClientSecretsAsync(clientId, pageSize, page);
     }

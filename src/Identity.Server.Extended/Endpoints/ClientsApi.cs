@@ -30,6 +30,10 @@ public static class ClientsApi
         
         readClientsGroup.MapGet("/{clientId:minlength(1)}", ClientsHandler.GetClientById)
             .WithName(nameof(ClientsHandler.GetClientById));
+        readClientsGroup.MapGet("/secrets", ClientsHandler.GetClientSecrets)
+            .WithName(nameof(ClientsHandler.GetClientSecrets));
+        readClientsGroup.MapGet("/secrets/{secretId:minlength(1)}", ClientsHandler.GetClientSecret)
+            .WithName(nameof(ClientsHandler.GetClientSecret));
         var writeClientsGroup = routes.MapGroup(API_PREFIXES.CLIENTS_MANAGEMENT_API_PREFIX);
         writeClientsGroup.WithTags("Clients");
         writeClientsGroup.RequireAuthorization(AuthorizationPolicyConstants.CLIENT_MANAGEMENT_WRITE);
@@ -40,5 +44,9 @@ public static class ClientsApi
             .WithName(nameof(ClientsHandler.UpdateClient));
         writeClientsGroup.MapDelete("/{clientId:minlength(1)}", ClientsHandler.DeleteClient)
             .WithName(nameof(ClientsHandler.DeleteClient));
+        writeClientsGroup.MapPost("/secrets", ClientsHandler.CreateClientSecret)
+            .WithName(nameof(ClientsHandler.CreateClientSecret));
+        writeClientsGroup.MapDelete("/secrets/{secretId:minlength(1)}", ClientsHandler.DeleteClientSecret)
+            .WithName(nameof(ClientsHandler.DeleteClientSecret));
     }
 }
