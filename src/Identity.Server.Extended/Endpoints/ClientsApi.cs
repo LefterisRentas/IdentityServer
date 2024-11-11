@@ -40,5 +40,13 @@ public static class ClientsApi
             .WithName(nameof(ClientsHandler.UpdateClient));
         writeClientsGroup.MapDelete("/{clientId:minlength(1)}", ClientsHandler.DeleteClient)
             .WithName(nameof(ClientsHandler.DeleteClient));
+        readClientsGroup.MapGet("/secrets", ClientsHandler.GetClientSecrets)
+            .WithName(nameof(ClientsHandler.GetClientSecrets));
+        writeClientsGroup.MapGet("/secrets/{secretId:minlength(1)}", ClientsHandler.GetClientSecret)
+            .WithName(nameof(ClientsHandler.GetClientSecret));
+        writeClientsGroup.MapPost("/secrets", ClientsHandler.CreateClientSecret)
+            .WithName(nameof(ClientsHandler.CreateClientSecret));
+        writeClientsGroup.MapDelete("/secrets/{secretId:minlength(1)}", ClientsHandler.DeleteClientSecret)
+            .WithName(nameof(ClientsHandler.DeleteClientSecret));
     }
 }
