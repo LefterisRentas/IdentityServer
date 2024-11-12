@@ -2,6 +2,7 @@
 using Identity.Server.Extended.Data;
 using Identity.Server.Extended.Data.Entities;
 using Identity.Server.Extended.Events;
+using Identity.Server.Extended.Extensions;
 using Identity.Server.Extended.Models;
 using Identity.Server.Extended.Models.Clients;
 using Identity.Server.Extended.Services.Abstractions;
@@ -75,7 +76,7 @@ internal class ClientStore<TConfigurationDbContext>(
         client.Id = 0;
         _context.Clients.Add(client);
         await _context.SaveChangesAsync();
-        await _events.RaiseAsync(new ClientCreationEvent(identity) { ClientId = client.ClientId, ClientName = client.ClientName });
+        await _events.RaiseAsync(new ClientCreationEvent(identity, client.ClientId, client.ClientName));
         return OperationResult.Success(client);
     }
     
@@ -103,6 +104,9 @@ internal class ClientStore<TConfigurationDbContext>(
                 return OperationResult.Failure<Client>(new Dictionary<string, List<string>> { { "ClientId", ["Client not found."] } });
             }
 
+            // Deep copy of the original client
+            var originalClientAsDto = ClientDto.FromEntity(existingClient);
+            var originalClient = ClientEntityExtensions.FromDto(originalClientAsDto);
             // Update main client fields
             UpdateClientFields(existingClient, client);
 
@@ -124,6 +128,8 @@ internal class ClientStore<TConfigurationDbContext>(
             // Save changes to the database
             await _context.SaveChangesAsync();
 
+            await _events.RaiseAsync(new ClientUpdateEvent(identity, originalClient, existingClient));
+            
             // Return success result with the updated client
             return OperationResult.Success(existingClient)!; //Existing client is not null
         }
@@ -159,6 +165,8 @@ internal class ClientStore<TConfigurationDbContext>(
             {
                 return OperationResult.Failure(new Dictionary<string, List<string>> { { "ClientId", ["Client not found."] } });
             }
+            
+            var clientDto = ClientDto.FromEntity(client);
 
             // Remove the client and all related entities
             _context.Clients.Remove(client);
@@ -166,6 +174,8 @@ internal class ClientStore<TConfigurationDbContext>(
             // Save changes to delete the client and its related entities
             await _context.SaveChangesAsync();
 
+            await events.RaiseAsync(new ClientDeletionEvent(clientDto, identity) { ClientId = clientId, ClientName = client.ClientName });
+            
             return OperationResult.Success();
         }
         catch (Exception ex)
@@ -255,9 +265,9 @@ internal class ClientStore<TConfigurationDbContext>(
         return Task.FromResult(OperationResult.Success(apiScopes))!;
     }
 
-    public Task<OperationResult<List<ApiResource>>> GetIdentityResourcesAsync()
+    public Task<OperationResult<List<IdentityResource>>> GetIdentityResourcesAsync()
     {
-        var identityResources = _context.ApiResources.AsNoTracking().ToList();
+        var identityResources = _context.IdentityResources.AsNoTracking().ToList();
         return Task.FromResult(OperationResult.Success(identityResources))!;
     }
 

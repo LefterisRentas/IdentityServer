@@ -57,4 +57,9 @@ public static class AuthorizationPolicyConstants
     /// Policy for api resource write.
     /// </summary>
     public const string API_RESOURCE_MANAGEMENT_WRITE = nameof(API_RESOURCE_MANAGEMENT_WRITE);
+    
+    /// <summary>
+    /// Policy to use to check if a user can open the management page.
+    /// </summary>
+    public const string CAN_VIEW_MANAGEMENT_PAGE = nameof(CAN_VIEW_MANAGEMENT_PAGE);
 }
