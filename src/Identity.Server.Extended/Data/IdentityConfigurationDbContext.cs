@@ -18,6 +18,8 @@ public class IdentityConfigurationDbContext : ConfigurationDbContext<IdentityCon
     
     public DbSet<ClientSecret> ClientSecrets { get; set; }
     
+    public DbSet<ClientScope> ClientScopes { get; set; }
+    
     /// <summary>
     /// A table that contains the claim definitions.
     /// </summary>
@@ -61,6 +63,12 @@ public class IdentityConfigurationDbContext : ConfigurationDbContext<IdentityCon
             secret.Property(x => x.Value).HasMaxLength(4000).IsRequired();
             secret.Property(x => x.Type).HasMaxLength(250).IsRequired();
             secret.Property(x => x.Description).HasMaxLength(2000);
+        });
+        
+        modelBuilder.Entity<ClientScope>(scope =>
+        {
+            scope.ToTable("ClientScopes"); // scope.ToTable(storeOptions.ClientScope);
+            scope.Property(x => x.Scope).HasMaxLength(200).IsRequired();
         });
     }
 }

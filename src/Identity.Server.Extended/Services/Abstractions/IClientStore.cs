@@ -85,5 +85,5 @@ public interface IClientStore
     
     Task<OperationResult<List<ApiScope>>> GetApiScopesAsync();
     
-    Task<OperationResult<List<ApiResource>>> GetIdentityResourcesAsync();
+    Task<OperationResult<List<IdentityResource>>> GetIdentityResourcesAsync();
 }
