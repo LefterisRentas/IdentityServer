@@ -10,14 +10,13 @@ public class ClientSecretsDto
 
     public List<ClientSecretDto> ClientSecrets { get; set; } = new List<ClientSecretDto>();
     
-    public static ClientSecretsDto FromEntities(IEnumerable<ClientSecret> clientSecrets, int pageSize = 10, int page = 1)
+    public static ClientSecretsDto FromEntities(List<ClientSecret> clientSecrets, int pageSize = 10, int page = 1)
     {
-        var secrets = clientSecrets.ToList();
         var clientSecretsDto = new ClientSecretsDto
         {
-            TotalCount = secrets.Count,
+            TotalCount = clientSecrets.Count,
             PageSize = pageSize,
-            ClientSecrets = secrets.Skip((page - 1) * pageSize).Take(pageSize).Select(ClientSecretDto.FromEntity).ToList()
+            ClientSecrets = clientSecrets.Skip((page - 1) * pageSize).Take(pageSize).Select(ClientSecretDto.FromEntity).ToList()
         };
         return clientSecretsDto;
     }

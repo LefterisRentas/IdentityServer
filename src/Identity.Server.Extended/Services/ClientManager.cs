@@ -30,7 +30,7 @@ public class ClientManager(IClientStore clientStore) : IClientManager
     /// <inheritdoc cref="IClientManager.GetClientsAsync"/>
     /// </summary>
     /// <returns></returns>
-    public async Task<OperationResult<IEnumerable<Client>?>> GetClientsAsync(string? search, int page = 1, int pageSize = 10)
+    public async Task<OperationResult<ClientsDto>> GetClientsAsync(string? search, int page = 1, int pageSize = 10)
     {
         return await clientStore.GetClientsAsync(search, page, pageSize);
     }

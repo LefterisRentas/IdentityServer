@@ -1,12 +1,15 @@
-﻿@using Identity.Server.MVC.Models
+﻿@using Identity.Server.Extended.Constants
+@using Identity.Server.MVC.Models
 @using Identity.Server.MVC.Options
 @using Identity.Server.MVC.Services.Abstractions
 @using IdentityServer4.Extensions
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.Extensions.Options
 @inject IOptionsSnapshot<OrganizationOptions> OrganizationOptions
 @inject UserManager<ApplicationUser> UserManager
 @inject IProfilePictureService ProfilePictureService
+@inject IAuthorizationService AuthorizationService
 
 @{
     string? name = null;
@@ -45,7 +48,14 @@
     }
 
     var organizationName = OrganizationOptions?.Value.Name;
+    
+    async Task<bool> CanViewManagementPageAsync()
+    {
+        // Perform the authorization check and cache the result
+        return (await AuthorizationService.AuthorizeAsync(User, AuthorizationPolicyConstants.CAN_VIEW_MANAGEMENT_PAGE)).Succeeded;
+    }
 }
+
 <head>
     <link rel="stylesheet" href="~/css/site.css">
 </head>
@@ -83,6 +93,12 @@
                         <li>
                             <a href="@Url.Action("Index", "Settings")" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Settings</a>
                         </li>
+                        @if (await CanViewManagementPageAsync())
+                        {
+                        <li>
+                            <a href="@Url.Action("Index", "Management")" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Management</a>
+                        </li>
+                        }
                         <li>
                             <a href="@Url.Action("Logout", "Account")" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Sign out</a>
                         </li>

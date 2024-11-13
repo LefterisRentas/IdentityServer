@@ -23,7 +23,6 @@
     <Folder Include="Controllers\Management\Users\" />
     <Folder Include="Migrations\" />
     <Folder Include="Views\ApiResources\" />
-    <Folder Include="Views\Clients\" />
     <Folder Include="Views\IdentityResources\" />
     <Folder Include="Views\Roles\" />
     <Folder Include="Views\Scopes\" />

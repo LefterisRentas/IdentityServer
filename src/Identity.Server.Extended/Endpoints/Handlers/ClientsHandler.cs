@@ -9,7 +9,7 @@ namespace Identity.Server.Extended.Endpoints.Handlers;
 
 internal static class ClientsHandler
 {
-    internal static async Task<Results<Ok<List<ClientDto>>, NotFound>> GetClients(IClientManager clientManager, string search, int page = 1, int pageSize = 10)
+    internal static async Task<Results<Ok<ClientsDto>, NotFound>> GetClients(IClientManager clientManager, string? search, int page = 1, int pageSize = 10)
     {
         var result = await clientManager.GetClientsAsync(search, page, pageSize);
         if (result.IsSuccess is false || result.Result is null)
@@ -17,7 +17,7 @@ internal static class ClientsHandler
             return  TypedResults.NotFound();
         }
 
-        return TypedResults.Ok(result.Result.Select(ClientDto.FromEntity).ToList());
+        return TypedResults.Ok(result.Result);
     }
     
     internal static async Task<Results<Ok<ClientDto>, NotFound>> GetClientById(IClientManager clientManager, string clientId)

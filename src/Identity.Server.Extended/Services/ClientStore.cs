@@ -26,7 +26,7 @@ internal class ClientStore<TConfigurationDbContext>(
     /// <inheritdoc cref="IClientStore.GetClientsAsync"/>
     /// </summary>
     /// <returns></returns>
-    public Task<OperationResult<IEnumerable<Client>?>> GetClientsAsync(string? search, int page = 1, int pageSize = 10)
+    public Task<OperationResult<ClientsDto>> GetClientsAsync(string? search, int page = 1, int pageSize = 10)
     {
         var clients = _context.Clients.AsNoTracking()
             .Include(x => x.AllowedGrantTypes)
@@ -38,10 +38,9 @@ internal class ClientStore<TConfigurationDbContext>(
             .Include(x => x.IdentityProviderRestrictions)
             .Include(x => x.AllowedCorsOrigins)
             .Include(x => x.Properties)
-            .Where(x => string.IsNullOrWhiteSpace(search) || x.ClientId.Contains(search) || x.ClientName.Contains(search))
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize).AsEnumerable();
-        return Task.FromResult(OperationResult.Success(clients));
+            .Where(x => string.IsNullOrWhiteSpace(search) || x.ClientId.Contains(search) || x.ClientName.Contains(search)).ToList();
+        
+        return Task.FromResult(OperationResult.Success(ClientsDto.FromEntities(clients, pageSize, page)))!;
     }
     
     /// <summary>
@@ -193,8 +192,6 @@ internal class ClientStore<TConfigurationDbContext>(
     {
         var clientSecrets = _context.ClientSecrets.AsNoTracking()
             .Where(x => x.ClientId == clientId)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
             .ToList();
         
         return Task.FromResult(OperationResult.Success(ClientSecretsDto.FromEntities(clientSecrets, pageSize, page)))!; //ClientSecretsDto.FromEntities will not return null

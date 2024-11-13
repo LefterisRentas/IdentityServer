@@ -1,0 +1,127 @@
+﻿@model Identity.Server.Extended.Models.Clients.ClientsDto
+
+@{
+    ViewData["Title"] = "Client Management";
+    var search = ViewBag.Search;
+}
+
+<div class="container mx-auto px-4 py-6 md:flex">
+    <partial name="_ManagementNav"/>
+
+    <div>
+        <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Client Management</h1>
+
+        <div class="mt-4">
+            <a href="@Url.Action("Create", "Clients")">
+                <button class="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800">
+                    <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                        Create Client
+                    </span>
+                </button>
+            </a>
+        </div>
+        @using (Html.BeginForm("Index", "Clients", FormMethod.Get))
+        {
+            <!-- Search Input -->
+
+            <div class="pb-4 bg-white dark:bg-gray-900 mt-4">
+                <label for="table-search" class="sr-only">Search</label>
+                <div class="relative mt-1">
+                    <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                        </svg>
+                    </div>
+                    <input type="text"
+                           id="table-search"
+                           class="block pt-2 ps-10 text-sm te   xt-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                           placeholder="Search for clients"
+                           asp-for="@search">
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="relative overflow-x-auto shadow-md sm:rounded-lg mt-4">
+                <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                        <th class="px-4 py-3">Name</th>
+                        <th class="px-4 py-3">Client ID</th>
+                        <th class="px-4 py-3">Enabled</th>
+                        <th class="px-4 py-3">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var client in Model.Clients)
+                    {
+                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                            <td class="w-4 p-4 font-medium text-gray-900 dark:text-white">@client.ClientName</td>
+                            <td class="w-4 p-4">@client.ClientId</td>
+                            <td class="w-4 p-4">
+                                <div class="flex items-center">
+                                    <input disabled="disabled" asp-for="@client.Enabled" id="checkbox-table-search-3"
+                                           class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                    <label for="checkbox-table-search-3" class="sr-only">checkbox</label>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3">
+                                <a href="@Url.Action("Edit", "Clients", new { clientId = client.ClientId })" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
+                                <a href="@Url.Action("Delete", "Clients", new { clientId = client.ClientId })" class="font-medium text-red-600 dark:text-red-500 hover:underline">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <nav class="flex items-center justify-between pt-4" aria-label="Table navigation">
+                <span class="text-sm font-normal text-gray-500 dark:text-gray-400">
+                    Showing
+                    <span class="font-semibold text-gray-900 dark:text-white">
+                        @(Model.PageSize >= Model.TotalCount ? Model.TotalCount : Model.PageSize)
+                    </span>
+                    of
+                    <span class="font-semibold text-gray-900 dark:text-white">@Model.TotalCount</span>
+                </span>
+                <ul class="inline-flex -space-x-px text-sm h-8">
+                    <!-- Previous Link -->
+                    <li>
+                        <a href="@(ViewBag.Page > 1 ? Url.Action("Index", new { page = ViewBag.Page - 1 }) : null)"
+                           aria-disabled="@(ViewBag.Page <= 1)"
+                           class="flex items-center justify-center px-3 h-8 leading-tight border border-gray-300 rounded-l-lg 
+                  @(ViewBag.Page > 1 ? "text-gray-500 bg-white hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" : "cursor-not-allowed text-gray-300 bg-gray-200 dark:bg-gray-700 dark:text-gray-500")">
+                            Previous
+                        </a>
+                    </li>
+
+                    <!-- Page Numbers -->
+                    @for (var i = ViewBag.Page - 3; i <= ViewBag.Page + 3; i++)
+                    {
+                        if (i > 0 && i <= ViewBag.MaxPage)
+                        {
+                            <li>
+                                <a href="@Url.Action("Index", new { page = i })"
+                                   class="flex items-center justify-center px-3 h-8 leading-tight border border-gray-300 
+                          @(i == ViewBag.Page ? "font-semibold text-gray-900 dark:text-white" : "text-gray-500 bg-white hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white")">
+                                    @i
+                                </a>
+                            </li>
+                        }
+                    }
+
+                    <!-- Next Link -->
+                    <li>
+                        <a href="@(ViewBag.Page < ViewBag.MaxPage ? Url.Action("Index", new { page = ViewBag.Page + 1 }) : null)"
+                           aria-disabled="@(ViewBag.Page >= ViewBag.MaxPage)"
+                           class="flex items-center justify-center px-3 h-8 leading-tight border border-gray-300 rounded-r-lg 
+                  @(ViewBag.Page < ViewBag.MaxPage ? "text-gray-500 bg-white hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" : "cursor-not-allowed text-gray-300 bg-gray-200 dark:bg-gray-700 dark:text-gray-500")">
+                            Next
+                        </a>
+                    </li>
+                </ul>
+
+            </nav>
+        }
+    </div>
+</div>

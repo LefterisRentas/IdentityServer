@@ -1,0 +1,103 @@
+﻿@using IdentityServer4.Models
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model Identity.Server.Extended.Models.Clients.ClientDto
+
+@{
+ViewData["Title"] = $"Edit Client: {Model.ClientName}";
+}
+
+<div class="container mx-auto px-4 py-6 md:flex">
+    <partial name="_ManagementNav"/>
+
+    <section class="bg-white dark:bg-gray-900">
+        <div class="max-w-2xl px-4 py-8 mx-auto lg:py-16">
+            <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Update Client</h2>
+            <form asp-action="Edit" asp-controller="Clients" method="post">
+                <div class="grid gap-4 mb-4 sm:grid-cols-2 sm:gap-6 sm:mb-5">
+
+                    <!-- Basic Information -->
+                    <div class="sm:col-span-2">
+                        <label for="clientName" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Client Name</label>
+                        <input type="text" name="ClientName" id="clientName" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" value="@Model.ClientName" required>
+                    </div>
+                    <div class="w-full">
+                        <label for="clientId" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Client ID</label>
+                        <input type="text" name="ClientId" id="clientId" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" value="@Model.ClientId" readonly>
+                    </div>
+
+                    <!-- Lifetime and Expiration Settings -->
+                    <div class="w-full">
+                        <label asp-for="AccessTokenLifetime" for="accessTokenLifetime" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Access Token Lifetime (seconds)</label>
+                        <input type="number" name="AccessTokenLifetime" id="accessTokenLifetime" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" value="@Model.AccessTokenLifetime" required>
+                    </div>
+                    <div class="w-full">
+                        <label asp-for="AbsoluteRefreshTokenLifetime" for="absoluteRefreshTokenLifetime" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Absolute Refresh Token Lifetime (seconds)</label>
+                        <input type="number" name="AbsoluteRefreshTokenLifetime" id="absoluteRefreshTokenLifetime" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" value="@Model.AbsoluteRefreshTokenLifetime" required>
+                    </div>
+                    <div class="w-full">
+                        <label for="refreshTokenExpiration" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Refresh Token Expiration</label>
+                        <select asp-for="RefreshTokenExpiration" name="RefreshTokenExpiration" id="refreshTokenExpiration" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
+                            <option value="@((int)TokenExpiration.Sliding)">@TokenExpiration.Sliding.ToString()</option>
+                            <option value="@((int)TokenExpiration.Absolute)">@TokenExpiration.Absolute.ToString()</option>
+                        </select>
+                    </div>
+
+                    <!-- Options -->
+                    <div>
+                        <label for="enabled" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Enabled</label>
+                        <input asp-for="Enabled" type="checkbox" name="Enabled" id="enabled" class="rounded focus:ring-primary-600">
+                    </div>
+                    <div>
+                        <label for="allowOfflineAccess" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Allow Offline Access</label>
+                        <input asp-for="AllowOfflineAccess" type="checkbox" name="AllowOfflineAccess" id="allowOfflineAccess" class="rounded focus:ring-primary-600">
+                    </div>
+                    <div>
+                        <label for="allowAccessTokensViaBrowser" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Allow Access Tokens Via Browser</label>
+                        <input asp-for="AllowAccessTokensViaBrowser" type="checkbox" name="AllowAccessTokensViaBrowser" id="allowAccessTokensViaBrowser" class="rounded focus:ring-primary-600">
+                    </div>
+
+                    <!-- URIs -->
+                    <div class="sm:col-span-2">
+                        <label for="clientUri" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Client URI</label>
+                        <input type="url" name="ClientUri" id="clientUri" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" value="@Model.ClientUri">
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label for="logoUri" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Logo URI</label>
+                        <input type="url" name="LogoUri" id="logoUri" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" value="@Model.LogoUri">
+                    </div>
+
+                    <!-- Protocol and Token Settings -->
+                    <div class="w-full">
+                        <label for="protocolType" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Protocol Type</label>
+                        <input type="text" name="ProtocolType" id="protocolType" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" value="@Model.ProtocolType">
+                    </div>
+                    <div class="w-full">
+                        <label for="identityTokenLifetime" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Identity Token Lifetime (seconds)</label>
+                        <input type="number" name="IdentityTokenLifetime" id="identityTokenLifetime" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" value="@Model.IdentityTokenLifetime">
+                    </div>
+                    <div class="w-full">
+                        <label for="userSsoLifetime" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">User SSO Lifetime (seconds)</label>
+                        <input type="number" name="UserSsoLifetime" id="userSsoLifetime" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" value="@Model.UserSsoLifetime">
+                    </div>
+
+                    <!-- Additional Settings -->
+                    <div class="sm:col-span-2">
+                        <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
+                        <textarea id="description" name="Description" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">@Model.Description</textarea>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex items-center space-x-4">
+                    <button type="submit" class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
+                        Update Client
+                    </button>
+                    <button type="button" onclick="window.location.href='@Url.Action("Delete", "Clients", new { id = Model.Id })'" class="text-red-600 inline-flex items-center hover:text-white border border-red-600 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">
+                        <svg class="w-5 h-5 mr-1 -ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                        Delete
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+</div>
