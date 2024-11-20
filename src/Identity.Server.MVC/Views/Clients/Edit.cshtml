@@ -3,97 +3,598 @@
 @model Identity.Server.Extended.Models.Clients.ClientDto
 
 @{
-ViewData["Title"] = $"Edit Client: {Model.ClientName}";
+    ViewData["Title"] = $"Edit Client: {Model.ClientName}";
+    ViewData["Description"] = $"Edit the client {Model.ClientName} in the Identity Server.";
 }
 
-<div class="container mx-auto px-4 py-6 md:flex">
+<div class="mx-auto px-4 py-6 md:flex">
     <partial name="_ManagementNav"/>
-
     <section class="bg-white dark:bg-gray-900">
         <div class="max-w-2xl px-4 py-8 mx-auto lg:py-16">
             <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Update Client</h2>
             <form asp-action="Edit" asp-controller="Clients" method="post">
                 <div class="grid gap-4 mb-4 sm:grid-cols-2 sm:gap-6 sm:mb-5">
-
-                    <!-- Basic Information -->
+                @if(!string.IsNullOrEmpty(Model.LogoUri))
+                {
                     <div class="sm:col-span-2">
-                        <label for="clientName" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Client Name</label>
-                        <input type="text" name="ClientName" id="clientName" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" value="@Model.ClientName" required>
+                        <img class="w-20 h-20 rounded-full" src="@Model.LogoUri" alt="@Model.ClientName Logo">
                     </div>
-                    <div class="w-full">
-                        <label for="clientId" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Client ID</label>
-                        <input type="text" name="ClientId" id="clientId" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" value="@Model.ClientId" readonly>
-                    </div>
+                }
+                <div class="sm:col-span-2">
+                    <label for="updated" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Updated</label>
+                    <input type="text" name="Updated" id="updated" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" value="@Model.Updated" readonly>
+                </div>
+                <div class="sm:col-span-2">
+                    <label for="lastAccessed" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Last Accessed</label>
+                    <input type="text" name="LastAccessed" id="lastAccessed" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" value="@Model.LastAccessed" readonly>
+                </div>
+                <div class="sm:col-span-2">
+                    <label for="logoUri" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Logo Uri</label>
+                    <input id="logoUri" name="LogoUri" type="text" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" value="@Model.LogoUri">
+                </div>
+                <div class="sm:col-span-2">
+                    <label for="frontChannelLogoutUri" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Front Channel Logout Uri</label>
+                    <input id="frontChannelLogoutUri" name="FrontChannelLogoutUri" type="text" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" value="@Model.FrontChannelLogoutUri">
+                </div>
+                <div class="sm:col-span-2">
+                    <label for="clientName" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Client Name</label>
+                    <input type="text" name="ClientName" id="clientName" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" value="@Model.ClientName" required>
+                </div>
+                <div class="w-full">
+                    <label for="clientId" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Client ID</label>
+                    <input type="text" name="ClientId" id="clientId" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" value="@Model.ClientId" readonly>
+                </div>
 
-                    <!-- Lifetime and Expiration Settings -->
-                    <div class="w-full">
-                        <label asp-for="AccessTokenLifetime" for="accessTokenLifetime" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Access Token Lifetime (seconds)</label>
-                        <input type="number" name="AccessTokenLifetime" id="accessTokenLifetime" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" value="@Model.AccessTokenLifetime" required>
-                    </div>
-                    <div class="w-full">
-                        <label asp-for="AbsoluteRefreshTokenLifetime" for="absoluteRefreshTokenLifetime" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Absolute Refresh Token Lifetime (seconds)</label>
-                        <input type="number" name="AbsoluteRefreshTokenLifetime" id="absoluteRefreshTokenLifetime" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" value="@Model.AbsoluteRefreshTokenLifetime" required>
-                    </div>
-                    <div class="w-full">
-                        <label for="refreshTokenExpiration" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Refresh Token Expiration</label>
-                        <select asp-for="RefreshTokenExpiration" name="RefreshTokenExpiration" id="refreshTokenExpiration" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
-                            <option value="@((int)TokenExpiration.Sliding)">@TokenExpiration.Sliding.ToString()</option>
-                            <option value="@((int)TokenExpiration.Absolute)">@TokenExpiration.Absolute.ToString()</option>
-                        </select>
-                    </div>
+                <!-- Lifetime and Expiration Settings -->
+                <div class="w-full">
+                    <label asp-for="AccessTokenLifetime" for="accessTokenLifetime" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Access Token Lifetime (seconds)</label>
+                    <input type="number" name="AccessTokenLifetime" id="accessTokenLifetime" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" value="@Model.AccessTokenLifetime" required>
+                </div>
+                <div class="w-full">
+                    <label asp-for="AbsoluteRefreshTokenLifetime" for="absoluteRefreshTokenLifetime" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Absolute Refresh Token Lifetime (seconds)</label>
+                    <input type="number" name="AbsoluteRefreshTokenLifetime" id="absoluteRefreshTokenLifetime" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" value="@Model.AbsoluteRefreshTokenLifetime" required>
+                </div>
+                <div class="w-full">
+                    <label asp-for="AuthorizationCodeLifetime" for="authorizationCodeLifetime" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Authorization Code Lifetime (seconds)</label>
+                    <input type="number" name="AuthorizationCodeLifetime" id="authorizationCodeLifetime" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" value="@Model.AuthorizationCodeLifetime" required>
+                </div>
+                <div class="w-full">
+                    <label asp-for="DeviceCodeLifetime" for="deviceCodeLifetime" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Device Code Lifetime (seconds)</label>
+                    <input type="number" name="DeviceCodeLifetime" id="deviceCodeLifetime" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" value="@Model.DeviceCodeLifetime" required>
+                </div>
+                <div class="w-full">
+                    <label asp-for="SlidingRefreshTokenLifetime" for="slidingRefreshTokenLifetime" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sliding Refresh Token Lifetime (seconds)</label>
+                    <input type="number" name="SlidingRefreshTokenLifetime" id="slidingRefreshTokenLifetime" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" value="@Model.SlidingRefreshTokenLifetime" required>
+                </div>
+                <div class="w-full">
+                    <label for="refreshTokenExpiration" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Refresh Token Expiration</label>
+                    <select asp-for="RefreshTokenExpiration" name="RefreshTokenExpiration" id="refreshTokenExpiration" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
+                        <option value="@((int)TokenExpiration.Sliding)">@TokenExpiration.Sliding.ToString()</option>
+                        <option value="@((int)TokenExpiration.Absolute)">@TokenExpiration.Absolute.ToString()</option>
+                    </select>
+                </div>
+                <div class="w-full">
+                    <label for="accessTokenType" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Access Token Type</label>
+                    <select asp-for="AccessTokenType" name="AccessTokenType" id="accessTokenType" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
+                        <option value="@((int)AccessTokenType.Jwt)">@AccessTokenType.Jwt.ToString()</option>
+                        <option value="@((int)AccessTokenType.Reference)">@AccessTokenType.Reference.ToString()</option>
+                    </select>
+                </div>
+                <div class="w-full">
+                    <label for="refreshTokenUsage" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Refresh Token Usage</label>
+                    <select asp-for="RefreshTokenUsage" name="RefreshTokenUsage" id="refreshTokenUsage" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
+                        <option value="@((int)TokenUsage.ReUse)">@TokenUsage.ReUse.ToString()</option>
+                        <option value="@((int)TokenUsage.OneTimeOnly)">@TokenUsage.OneTimeOnly.ToString()</option>
+                    </select>
+                </div>
 
-                    <!-- Options -->
-                    <div>
-                        <label for="enabled" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Enabled</label>
-                        <input asp-for="Enabled" type="checkbox" name="Enabled" id="enabled" class="rounded focus:ring-primary-600">
-                    </div>
-                    <div>
-                        <label for="allowOfflineAccess" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Allow Offline Access</label>
-                        <input asp-for="AllowOfflineAccess" type="checkbox" name="AllowOfflineAccess" id="allowOfflineAccess" class="rounded focus:ring-primary-600">
-                    </div>
-                    <div>
-                        <label for="allowAccessTokensViaBrowser" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Allow Access Tokens Via Browser</label>
-                        <input asp-for="AllowAccessTokensViaBrowser" type="checkbox" name="AllowAccessTokensViaBrowser" id="allowAccessTokensViaBrowser" class="rounded focus:ring-primary-600">
-                    </div>
+                <div class="w-full">
+                    <a href="@Url.Action("Secrets", "Clients", new { clientId = Model.Id, clientName = Model.ClientId })"
+                       class="inline-flex items-center justify-center p-5 text-base font-medium text-gray-800 bg-yellow-300 rounded-lg hover:bg-yellow-400 hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-yellow-500">
+                        <svg class="w-6 h-6 text-gray-800 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                            <path fill-rule="evenodd" d="M8 10V7a4 4 0 1 1 8 0v3h1a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h1Zm2-3a2 2 0 1 1 4 0v3h-4V7Zm2 6a1 1 0 0 1 1 1v3a1 1 0 1 1-2 0v-3a1 1 0 0 1 1-1Z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="w-full">Secrets</span>
+                        <svg class="w-4 h-4 ms-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
+                        </svg>
+                    </a>
+                </div>
 
-                    <!-- URIs -->
-                    <div class="sm:col-span-2">
-                        <label for="clientUri" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Client URI</label>
-                        <input type="url" name="ClientUri" id="clientUri" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" value="@Model.ClientUri">
-                    </div>
-                    <div class="sm:col-span-2">
-                        <label for="logoUri" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Logo URI</label>
-                        <input type="url" name="LogoUri" id="logoUri" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" value="@Model.LogoUri">
-                    </div>
+                <!-- Options -->
+                <div>
+                    <label for="enabled" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Enabled</label>
+                    <input asp-for="Enabled" type="checkbox" name="Enabled" id="enabled" class="rounded focus:ring-primary-600">
+                </div>
+                <div>
+                    <label for="allowOfflineAccess" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Allow Offline Access</label>
+                    <input asp-for="AllowOfflineAccess" type="checkbox" name="AllowOfflineAccess" id="allowOfflineAccess" class="rounded focus:ring-primary-600">
+                </div>
+                <div>
+                    <label for="allowAccessTokensViaBrowser" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Allow Access Tokens Via Browser</label>
+                    <input asp-for="AllowAccessTokensViaBrowser" type="checkbox" name="AllowAccessTokensViaBrowser" id="allowAccessTokensViaBrowser" class="rounded focus:ring-primary-600">
+                </div>
+                <div>
+                    <label for="allowRememberConsent" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Allow Remember Consent</label>
+                    <input asp-for="AllowRememberConsent" type="checkbox" name="AllowRememberConsent" id="allowRememberConsent" class="rounded focus:ring-primary-600">
+                </div>
+                <div>
+                    <label for="requireConsent" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Require Consent</label>
+                    <input asp-for="RequireConsent" type="checkbox" name="RequireConsent" id="requireConsent" class="rounded focus:ring-primary-600">
+                </div>
+                <div>
+                    <label for="frontChannelLogoutSessionRequired" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Front Channel Logout Session Required</label>
+                    <input asp-for="FrontChannelLogoutSessionRequired" type="checkbox" name="frontChannelLogoutSessionRequired" id="frontChannelLogoutSessionRequired" class="rounded focus:ring-primary-600">
+                </div>
+                <div>
+                    <label for="includeJwtId" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Include Jwt Id</label>
+                    <input asp-for="IncludeJwtId" type="checkbox" name="includeJwtId" id="includeJwtId" class="rounded focus:ring-primary-600">
+                </div>
+                <div>
+                    <label for="alwaysIncludeUserClaimsInIdToken" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Always Include User Claims In Id Token</label>
+                    <input asp-for="AlwaysIncludeUserClaimsInIdToken" type="checkbox" name="alwaysIncludeUserClaimsInIdToken" id="alwaysIncludeUserClaimsInIdToken" class="rounded focus:ring-primary-600">
+                </div>
+                <div>
+                    <label for="alwaysSendClientClaims" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Always Send Client Claims</label>
+                    <input asp-for="AlwaysSendClientClaims" type="checkbox" name="alwaysSendClientClaims" id="alwaysSendClientClaims" class="rounded focus:ring-primary-600">
+                </div>
+                <div>
+                    <label for="requirePkce" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Require Pkce</label>
+                    <input asp-for="RequirePkce" type="checkbox" name="requirePkce" id="requirePkce" class="rounded focus:ring-primary-600">
+                </div>
+                <div>
+                    <label for="allowPlainTextPkce" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Allow Plain Text Pkce</label>
+                    <input asp-for="AllowPlainTextPkce" type="checkbox" name="allowPlainTextPkce" id="allowPlainTextPkce" class="rounded focus:ring-primary-600">
+                </div>
+                <div>
+                    <label for="updateAccessTokenClaimsOnRefresh" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Update Access Token Claims On Refresh</label>
+                    <input asp-for="UpdateAccessTokenClaimsOnRefresh" type="checkbox" name="updateAccessTokenClaimsOnRefresh" id="updateAccessTokenClaimsOnRefresh" class="rounded focus:ring-primary-600">
+                </div>
 
-                    <!-- Protocol and Token Settings -->
-                    <div class="w-full">
-                        <label for="protocolType" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Protocol Type</label>
-                        <input type="text" name="ProtocolType" id="protocolType" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" value="@Model.ProtocolType">
-                    </div>
-                    <div class="w-full">
-                        <label for="identityTokenLifetime" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Identity Token Lifetime (seconds)</label>
-                        <input type="number" name="IdentityTokenLifetime" id="identityTokenLifetime" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" value="@Model.IdentityTokenLifetime">
-                    </div>
-                    <div class="w-full">
-                        <label for="userSsoLifetime" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">User SSO Lifetime (seconds)</label>
-                        <input type="number" name="UserSsoLifetime" id="userSsoLifetime" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" value="@Model.UserSsoLifetime">
-                    </div>
+                <div>
+                    <label for="backChannelLogoutSessionRequired" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Back Channel Logout Session Required</label>
+                    <input asp-for="BackChannelLogoutSessionRequired" type="checkbox" name="backChannelLogoutSessionRequired" id="backChannelLogoutSessionRequired" class="rounded focus:ring-primary-600">
+                </div>
 
-                    <!-- Additional Settings -->
-                    <div class="sm:col-span-2">
-                        <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
-                        <textarea id="description" name="Description" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">@Model.Description</textarea>
-                    </div>
+                <div>
+                    <label for="enableLocalLogin" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Enable Local Login</label>
+                    <input asp-for="EnableLocalLogin" type="checkbox" name="enableLocalLogin" id="enableLocalLogin" class="rounded focus:ring-primary-600">
+                </div>
+
+                <div>
+                    <label for="requireClientSecret" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Require Client Secret</label>
+                    <input asp-for="RequireClientSecret" type="checkbox" name="requireClientSecret" id="requireClientSecret" class="rounded focus:ring-primary-600">
+                </div>
+
+                <div>
+                    <label for="requireRequestObject" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Require Request Object</label>
+                    <input asp-for="RequireRequestObject" type="checkbox" name="requireRequestObject" id="requireRequestObject" class="rounded focus:ring-primary-600">
+                </div>
+
+                <div class="sm:col-span-2">
+                    <label for="clientClaimsPrefix" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">ClientClaimsPrefix</label>
+                    <input type="text" name="ClientClaimsPrefix" id="clientClaimsPrefix" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" value="@Model.ClientClaimsPrefix">
+                </div>
+
+                <!-- URIs -->
+                <div class="sm:col-span-2">
+                    <label for="clientUri" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Client URI</label>
+                    <input type="url" name="ClientUri" id="clientUri" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" value="@Model.ClientUri">
+                </div>
+
+                <div class="sm:col-span-2">
+                    <label for="backChannelLogoutUri" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Back Channel Logout Uri</label>
+                    <input type="url" name="BackChannelLogoutUri" id="backChannelLogoutUri" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" value="@Model.BackChannelLogoutUri">
+                </div>
+
+                <!-- Allowed CORS Origins -->
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Allowed CORS Origins</label>
+                    <ul id="corsOriginsContainer">
+                        @foreach (var item in Model.AllowedCorsOrigins)
+                        {
+                            <li class="sm:col-span-full item-entry">
+                                <input type="url" name="AllowedCorsOrigins" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                                       value="@item">
+                                <button type="button" class="remove-item-button text-red-600 inline-flex items-center hover:text-white border border-red-600 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">
+                                    <svg class="w-5 h-5 mr-1 -ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    Remove
+                                </button>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <div class="sm:col-span-full">
+                    <button type="button"
+                            data-target-container="corsOriginsContainer"
+                            data-template-id="corsOriginTemplate"
+                            class="add-item-button relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-teal-300 to-lime-300 group-hover:from-teal-300 group-hover:to-lime-300 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-lime-200 dark:focus:ring-lime-800">
+                        <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                            Add CORS Origin
+                        </span>
+                    </button>
+                </div>
+
+                <!-- PostLogoutRedirectUris -->
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Post Logout Redirect URIs</label>
+                    <ul id="postLogoutRedirectUrisContainer">
+                        @foreach (var item in Model.PostLogoutRedirectUris)
+                        {
+                            <li class="sm:col-span-full item-entry">
+                                <input type="url" name="PostLogoutRedirectUris" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                                       value="@item">
+                                <button type="button" class="remove-item-button text-red-600 inline-flex items-center hover:text-white border border-red-600 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">
+                                    <svg class="w-5 h-5 mr-1 -ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    Remove
+                                </button>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <div class="sm:col-span-full">
+                    <button type="button"
+                            data-target-container="postLogoutRedirectUrisContainer"
+                            data-template-id="postLogoutRedirectUriTemplate"
+                            class="add-item-button relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-teal-300 to-lime-300 group-hover:from-teal-300 group-hover:to-lime-300 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-lime-200 dark:focus:ring-lime-800">
+                        <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                            Add Post Logout Redirect URI
+                        </span>
+                    </button>
+                </div>
+
+                <!-- RedirectUris -->
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Redirect URIs</label>
+                    <ul id="redirectUrisContainer">
+                        @foreach (var item in Model.RedirectUris)
+                        {
+                            <li class="sm:col-span-full item-entry">
+                                <input type="url" name="RedirectUris" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                                       value="@item">
+                                <button type="button" class="remove-item-button text-red-600 inline-flex items-center hover:text-white border border-red-600 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">
+                                    <svg class="w-5 h-5 mr-1 -ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    Remove
+                                </button>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <div class="sm:col-span-full">
+                    <button type="button"
+                            data-target-container="redirectUrisContainer"
+                            data-template-id="redirectUriTemplate"
+                            class="add-item-button relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-teal-300 to-lime-300 group-hover:from-teal-300 group-hover:to-lime-300 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-lime-200 dark:focus:ring-lime-800">
+                        <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                            Add Redirect URI
+                        </span>
+                    </button>
+                </div>
+
+                <!-- Templates -->
+                <template id="corsOriginTemplate">
+                    <li class="sm:col-span-full item-entry">
+                        <input type="url" name="AllowedCorsOrigins" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                               placeholder="Enter a CORS origin">
+                        <button type="button" class="remove-item-button text-red-600 inline-flex items-center hover:text-white border border-red-600 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">
+                            <svg class="w-5 h-5 mr-1 -ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                            </svg>
+                            Remove
+                        </button>
+                    </li>
+                </template>
+
+                <template id="postLogoutRedirectUriTemplate">
+                    <li class="sm:col-span-full item-entry">
+                        <input type="url" name="PostLogoutRedirectUris" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                               placeholder="Enter a Post Logout Redirect URI">
+                        <button type="button" class="remove-item-button text-red-600 inline-flex items-center hover:text-white border border-red-600 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">
+                            <svg class="w-5 h-5 mr-1 -ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                            </svg>
+                            Remove
+                        </button>
+                    </li>
+                </template>
+
+                <template id="redirectUriTemplate">
+                    <li class="sm:col-span-full item-entry">
+                        <input type="url" name="RedirectUris" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                               placeholder="Enter a Redirect URI">
+                        <button type="button" class="remove-item-button text-red-600 inline-flex items-center hover:text-white border border-red-600 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">
+                            <svg class="w-5 h-5 mr-1 -ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                            </svg>
+                            Remove
+                        </button>
+                    </li>
+                </template>
+
+                <!-- Allowed Grant Types -->
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Allowed Grant Types</label>
+                    <ul id="allowedGrantTypesContainer">
+                        @foreach (var item in Model.AllowedGrantTypes)
+                        {
+                            <li class="sm:col-span-full item-entry">
+                                <input type="text" name="AllowedGrantTypes" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                                       value="@item">
+                                <button type="button" class="remove-item-button text-red-600 inline-flex items-center hover:text-white border border-red-600 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">
+                                    <svg class="w-5 h-5 mr-1 -ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    Remove
+                                </button>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <div class="sm:col-span-full">
+                    <button type="button"
+                            data-target-container="allowedGrantTypesContainer"
+                            data-template-id="allowedGrantTypeTemplate"
+                            class="add-item-button relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-teal-300 to-lime-300 group-hover:from-teal-300 group-hover:to-lime-300 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-lime-200 dark:focus:ring-lime-800">
+                        <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                            Add Grant Type
+                        </span>
+                    </button>
+                </div>
+
+                <!-- Template for Allowed Grant Types -->
+                <template id="allowedGrantTypeTemplate">
+                    <li class="sm:col-span-full item-entry">
+                        <input type="text" name="AllowedGrantTypes" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                               placeholder="Enter a Grant Type">
+                        <button type="button" class="remove-item-button text-red-600 inline-flex items-center hover:text-white border border-red-600 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">
+                            <svg class="w-5 h-5 mr-1 -ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                            </svg>
+                            Remove
+                        </button>
+                    </li>
+                </template>
+
+                <!-- Client Claims -->
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Client Claims</label>
+                    <ul id="clientClaimsContainer">
+                        @foreach (var (claim, i) in Model.Claims.Select((claim, i) => (claim, i)))
+                        {
+                            <li class="sm:col-span-full item-entry grid grid-cols-1 md:grid-cols-2 gap-4 item-entry">
+                                <input type="text" name="Claims[@i].Type" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                                       value="@claim.Type" placeholder="Claim Type">
+                                <input type="text" name="Claims[@i].Value" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                                       value="@claim.Value" placeholder="Claim Value">
+                                <button type="button" class="remove-item-button text-red-600 inline-flex items-center hover:text-white border border-red-600 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">
+                                    <svg class="w-5 h-5 mr-1 -ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    Remove
+                                </button>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <div class="sm:col-span-full">
+                    <button type="button"
+                            data-target-container="clientClaimsContainer"
+                            data-template-id="clientClaimTemplate"
+                            class="add-item-button relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-teal-300 to-lime-300 group-hover:from-teal-300 group-hover:to-lime-300 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-lime-200 dark:focus:ring-lime-800">
+                        <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                            Add Client Claim
+                        </span>
+                    </button>
+                </div>
+
+                <!-- Template for Client Claims -->
+                <template id="clientClaimTemplate">
+                    <li class="sm:col-span-full item-entry grid grid-cols-1 md:grid-cols-2 gap-4 item-entry">
+                        <input type="text" name="Claims[INDEX].Type" id="Claims_INDEX_Type"
+                               class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                               placeholder="Claim Type">
+                        <input type="text" name="Claims[INDEX].Value" id="Claims_INDEX_Value"
+                               class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                               placeholder="Claim Value">
+                        <button type="button" class="remove-item-button text-red-600 inline-flex items-center hover:text-white border border-red-600 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">
+                            <svg class="w-5 h-5 mr-1 -ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                            </svg>
+                            Remove
+                        </button>
+                    </li>
+                </template>
+
+                <!-- Client Properties -->
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Client Properties</label>
+                    <ul id="clientPropertiesContainer">
+                        @foreach (var (property, i) in Model.Properties.Select((property, i) => (property, i)))
+                        {
+                        <li class="sm:col-span-full item-entry grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <input type="text" name="Properties[@i].Key"
+                                   class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                                   value="@property.Key" placeholder="Property Key">
+                            <input type="text" name="Properties[@i].Value"
+                                   class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                                   value="@property.Value" placeholder="Property Value">
+                            <button type="button" class="remove-item-button text-red-600 inline-flex items-center hover:text-white border border-red-600 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">
+                                <svg class="w-5 h-5 mr-1 -ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                </svg>
+                                Remove
+                            </button>
+                        </li>
+                        }
+                    </ul>
+                </div>
+                <div class="sm:col-span-full">
+                    <button type="button"
+                            data-target-container="clientPropertiesContainer"
+                            data-template-id="clientPropertyTemplate"
+                            class="add-item-button relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-teal-300 to-lime-300 group-hover:from-teal-300 group-hover:to-lime-300 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-lime-200 dark:focus:ring-lime-800">
+                            <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                                Add Client Property
+                            </span>
+                    </button>
+                </div>
+
+                <!-- Template for Client Properties -->
+                <template id="clientPropertyTemplate">
+                    <li class="sm:col-span-full item-entry grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="text" name="Properties[INDEX].Key" id="Properties_INDEX_Key"
+                               class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                               placeholder="Property Key">
+                        <input type="text" name="Properties[INDEX].Value" id="Properties_INDEX_Value"
+                               class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                               placeholder="Property Value">
+                        <button type="button" class="remove-item-button text-red-600 inline-flex items-center hover:text-white border border-red-600 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">
+                            <svg class="w-5 h-5 mr-1 -ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                            </svg>
+                            Remove
+                        </button>
+                    </li>
+                </template>
+                
+                <!-- Allowed Scopes -->
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Allowed Scopes</label>
+                    <ul id="allowedScopesContainer">
+                        @foreach (var scope in Model.AllowedScopes)
+                        {
+                            <li class="sm:col-span-full item-entry">
+                                <input type="text" name="AllowedScopes" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                                       value="@scope" placeholder="Enter Allowed Scope">
+                                <button type="button" class="remove-item-button text-red-600 inline-flex items-center hover:text-white border border-red-600 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">
+                                    <svg class="w-5 h-5 mr-1 -ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    Remove
+                                </button>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <div class="sm:col-span-full">
+                    <button type="button"
+                            data-target-container="allowedScopesContainer"
+                            data-template-id="allowedScopeTemplate"
+                            class="add-item-button relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-teal-300 to-lime-300 group-hover:from-teal-300 group-hover:to-lime-300 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-lime-200 dark:focus:ring-lime-800">
+                        <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                            Add Allowed Scope
+                        </span>
+                    </button>
+                </div>
+
+                <!-- Template for Allowed Scopes -->
+                <template id="allowedScopeTemplate">
+                    <li class="sm:col-span-full item-entry">
+                        <input type="text" name="AllowedScopes" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                               placeholder="Enter Allowed Scope">
+                        <button type="button" class="remove-item-button text-red-600 inline-flex items-center hover:text-white border border-red-600 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">
+                            <svg class="w-5 h-5 mr-1 -ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                            </svg>
+                            Remove
+                        </button>
+                    </li>
+                </template>
+
+                <!-- Allowed Identity Token Signing Algorithms -->
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Allowed Identity Token Signing Algorithms</label>
+                    <ul id="allowedIdentityTokenSigningAlgorithmsContainer">
+                        @foreach (var (algorithm, i) in Model.AllowedIdentityTokenSigningAlgorithms.Select((algorithm, i) => (algorithm, i)))
+                        {
+                            <li class="sm:col-span-full item-entry">
+                                <input type="text" name="AllowedIdentityTokenSigningAlgorithms[@i]" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                                       value="@algorithm" placeholder="Signing Algorithm">
+                                <button type="button" class="remove-item-button text-red-600 inline-flex items-center hover:text-white border border-red-600 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">
+                                    <svg class="w-5 h-5 mr-1 -ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    Remove
+                                </button>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <div class="sm:col-span-full">
+                    <button type="button"
+                            data-target-container="allowedIdentityTokenSigningAlgorithmsContainer"
+                            data-template-id="allowedIdentityTokenSigningAlgorithmTemplate"
+                            class="add-item-button relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-teal-300 to-lime-300 group-hover:from-teal-300 group-hover:to-lime-300 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-lime-200 dark:focus:ring-lime-800">
+                        <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                            Add Signing Algorithm
+                        </span>
+                    </button>
+                </div>
+
+                <!-- Template for Signing Algorithms -->
+                <template id="allowedIdentityTokenSigningAlgorithmTemplate">
+                    <li class="sm:col-span-full item-entry">
+                        <input type="text" name="AllowedIdentityTokenSigningAlgorithms[INDEX]" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                               placeholder="Signing Algorithm">
+                        <button type="button" class="remove-item-button text-red-600 inline-flex items-center hover:text-white border border-red-600 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">
+                            <svg class="w-5 h-5 mr-1 -ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                            </svg>
+                            Remove
+                        </button>
+                    </li>
+                </template>
+
+                <!-- Protocol and Token Settings -->
+                <div class="w-full">
+                    <label for="protocolType" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Protocol Type</label>
+                    <input type="text" name="ProtocolType" id="protocolType" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" value="@Model.ProtocolType">
+                </div>
+                <div class="w-full">
+                    <label for="identityTokenLifetime" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Identity Token Lifetime (seconds)</label>
+                    <input type="number" name="IdentityTokenLifetime" id="identityTokenLifetime" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" value="@Model.IdentityTokenLifetime">
+                </div>
+                <div class="w-full">
+                    <label for="consentLifetime" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Consent Lifetime (seconds)</label>
+                    <input type="number" name="ConsentLifetime" id="consentLifetime"
+                           class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                           value="@Model.ConsentLifetime">
+                </div>
+                <div class="w-full">
+                    <label for="userSsoLifetime" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">User SSO Lifetime (seconds)</label>
+                    <input type="number" name="UserSsoLifetime" id="userSsoLifetime" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" value="@Model.UserSsoLifetime">
+                </div>
+
+                <!-- Additional Settings -->
+                <div class="sm:col-span-2">
+                    <label for="pairWiseSubjectSalt" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Pair Wise Subject Salt</label>
+                    <textarea id="pairWiseSubjectSalt" name="PairWiseSubjectSalt" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">@Model.PairWiseSubjectSalt</textarea>
+                </div>
+                <div class="sm:col-span-2">
+                    <label for="userCodeType" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">User Code Type</label>
+                    <textarea id="userCodeType" name="UserCodeType" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">@Model.UserCodeType</textarea>
+                </div>
+                <div class="sm:col-span-2">
+                    <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
+                    <textarea id="description" name="Description" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">@Model.Description</textarea>
+                </div>
                 </div>
 
                 <!-- Actions -->
                 <div class="flex items-center space-x-4">
-                    <button type="submit" class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
+                    <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
                         Update Client
                     </button>
-                    <button type="button" onclick="window.location.href='@Url.Action("Delete", "Clients", new { id = Model.Id })'" class="text-red-600 inline-flex items-center hover:text-white border border-red-600 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">
-                        <svg class="w-5 h-5 mr-1 -ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                    <button type="button" onclick="@Url.Action("Delete", "Clients", new { id = Model.ClientId })" class="text-red-600 inline-flex items-center hover:text-white border border-red-600 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">
+                        <svg class="w-5 h-5 mr-1 -ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                        </svg>
                         Delete
                     </button>
                 </div>

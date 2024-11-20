@@ -105,7 +105,7 @@ public class ClientManager(IClientStore clientStore) : IClientManager
     /// <summary>
     /// <inheritdoc cref="IClientManager.AddClientSecretAsync"/>
     /// </summary>
-    public async Task<OperationResult<ClientSecretDto>> AddClientSecretAsync(string clientId, ClientSecretDto clientSecretDto, ClaimsPrincipal identity)
+    public async Task<OperationResult<ClientSecretDto>> AddClientSecretAsync(int clientId, ClientSecretDto clientSecretDto, ClaimsPrincipal identity)
     {
         return await clientStore.AddClientSecretAsync(clientId, clientSecretDto, identity);
     }
@@ -113,7 +113,7 @@ public class ClientManager(IClientStore clientStore) : IClientManager
     /// <summary>
     /// <inheritdoc cref="IClientManager.RemoveClientSecretAsync"/>
     /// </summary>
-    public async Task<OperationResult<ClientSecretDto>> RemoveClientSecretAsync(string clientId, int secretId, ClaimsPrincipal identity)
+    public async Task<OperationResult<ClientSecretDto>> RemoveClientSecretAsync(int clientId, int secretId, ClaimsPrincipal identity)
     {
         return await clientStore.RemoveClientSecretAsync(clientId, secretId, identity);
     }

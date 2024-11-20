@@ -38,6 +38,8 @@ public interface IClientManager
     /// </summary>
     /// <param name="client">The client entity with updated information, including client ID, name, and any modified settings.</param>
     /// <param name="identity">The user performing the update, represented by the current user's claims.</param>
+    /// <param name="updateClaims">Flag indicating whether to update the client's claims.</param>
+    /// <param name="updateProperties">Flag indicating whether to update the client's properties.</param>
     /// <returns>An <see cref="OperationResult{Client}"/> indicating the outcome of the update operation, with the updated client entity if successful.</returns>
     Task<OperationResult<Client>> UpdateClientAsync(Client client, ClaimsPrincipal identity, bool updateClaims = false, bool updateProperties = false);
 
@@ -72,7 +74,7 @@ public interface IClientManager
     /// <param name="clientSecretDto">The details of the client secret to add, including values and expiration.</param>
     /// <param name="identity">The user adding the secret, represented by the current user's claims.</param>
     /// <returns>An <see cref="OperationResult{ClientSecretDto}"/> indicating the outcome of the add operation, containing the newly added client secret if successful.</returns>
-    Task<OperationResult<ClientSecretDto>> AddClientSecretAsync(string clientId, ClientSecretDto clientSecretDto, ClaimsPrincipal identity);
+    Task<OperationResult<ClientSecretDto>> AddClientSecretAsync(int clientId, ClientSecretDto clientSecretDto, ClaimsPrincipal identity);
 
     /// <summary>
     /// Removes a specific secret from a client.
@@ -81,7 +83,7 @@ public interface IClientManager
     /// <param name="secretId">The unique identifier of the secret to remove.</param>
     /// <param name="identity">The user performing the removal, represented by the current user's claims.</param>
     /// <returns>An <see cref="OperationResult{ClientSecretDto}"/> indicating the success or failure of the removal operation.</returns>
-    Task<OperationResult<ClientSecretDto>> RemoveClientSecretAsync(string clientId, int secretId, ClaimsPrincipal identity);
+    Task<OperationResult<ClientSecretDto>> RemoveClientSecretAsync(int clientId, int secretId, ClaimsPrincipal identity);
     
     // Task<ClientClaim> AddClientClaimAsync(string clientId, ClientClaimDto clientClaimDto, ClaimsPrincipal identity);
     //

@@ -7,83 +7,103 @@ using IdentityServer4.EntityFramework.Entities;
 
 namespace Identity.Server.Extended.Services.Abstractions;
 
+/// <summary>
+/// Interface for managing clients within the Identity Server, providing methods for CRUD operations,
+/// secret management, and retrieval of related resources like grant types, API scopes, and identity resources.
+/// </summary>
 public interface IClientStore
 {
     /// <summary>
-    /// Get all clients from the <see cref="ConfigurationDbContext"/>
+    /// Retrieves all clients from the <see cref="ConfigurationDbContext"/> with optional search and pagination.
     /// </summary>
-    /// <returns></returns>
+    /// <param name="search">Optional search term to filter clients by name or other criteria.</param>
+    /// <param name="page">The page number to retrieve (default is 1).</param>
+    /// <param name="pageSize">The number of items per page (default is 10).</param>
+    /// <returns>An <see cref="OperationResult{ClientsDto}"/> containing the list of clients with pagination details.</returns>
     Task<OperationResult<ClientsDto>> GetClientsAsync(string? search, int page = 1, int pageSize = 10);
 
     /// <summary>
-    /// Get a client by its id.
+    /// Retrieves a client by its unique identifier.
     /// </summary>
-    /// <param name="clientId"></param>
-    /// <returns></returns>
+    /// <param name="clientId">The unique identifier of the client.</param>
+    /// <returns>An <see cref="OperationResult{Client}"/> containing the client details, or an error if not found.</returns>
     Task<OperationResult<Client?>> GetClientByIdAsync(string clientId);
 
     /// <summary>
-    /// Create a new client in the system.
+    /// Creates a new client in the system.
     /// </summary>
-    /// <param name="client">The client entity to create, containing client details such as client ID, name, and settings.</param>
-    /// <param name="identity">The creator of the client, represented by the current user's claims.</param>
+    /// <param name="client">The client entity to create, including its configuration and settings.</param>
+    /// <param name="identity">The user performing the creation, represented by their claims.</param>
     /// <returns>An <see cref="OperationResult{Client}"/> indicating success or failure, and containing the created client if successful.</returns>
     Task<OperationResult<Client?>> CreateClientAsync(Client client, ClaimsPrincipal identity);
 
     /// <summary>
-    /// Update an existing client's details in the system.
-    /// If any entities like claims or properties are included in the client entity, they will be updated as well.
+    /// Updates an existing client's details in the system, including optional updates to claims and properties.
     /// </summary>
-    /// <param name="client">The client entity with updated information, including client ID, name, and any modified settings.</param>
-    /// <param name="identity">The user performing the update, represented by the current user's claims.</param>
-    /// <returns>An <see cref="OperationResult{Client}"/> indicating the outcome of the update operation, with the updated client entity if successful.</returns>
+    /// <param name="client">The client entity with updated information.</param>
+    /// <param name="identity">The user performing the update, represented by their claims.</param>
+    /// <param name="updateClaims">Indicates whether to update the client's claims.</param>
+    /// <param name="updateProperties">Indicates whether to update the client's properties.</param>
+    /// <returns>An <see cref="OperationResult{Client}"/> indicating the outcome of the update operation.</returns>
     Task<OperationResult<Client>> UpdateClientAsync(Client client, ClaimsPrincipal identity, bool updateClaims = false, bool updateProperties = false);
 
     /// <summary>
-    /// Delete a client from the system.
+    /// Deletes a client by its unique identifier.
     /// </summary>
-    /// <param name="clientId">The unique identifier of the client to be deleted.</param>
-    /// <param name="identity">The user performing the deletion, represented by the current user's claims.</param>
-    /// <returns>An <see cref="OperationResult"/> indicating success or failure of the deletion operation.</returns>
+    /// <param name="clientId">The unique identifier of the client to delete.</param>
+    /// <param name="identity">The user performing the deletion, represented by their claims.</param>
+    /// <returns>An <see cref="OperationResult"/> indicating the success or failure of the deletion operation.</returns>
     Task<OperationResult> DeleteClientAsync(string clientId, ClaimsPrincipal identity);
 
     /// <summary>
-    /// Retrieves a paginated list of secrets associated with a specific client.
+    /// Retrieves a paginated list of secrets for a specific client.
     /// </summary>
-    /// <param name="clientId">The unique identifier of the client whose secrets are to be retrieved.</param>
-    /// <param name="pageSize">The number of secrets to retrieve per page.</param>
-    /// <param name="page">The page number to retrieve.</param>
-    /// <returns>An <see cref="OperationResult{ClientSecretsDto}"/> containing the list of client secrets, along with pagination details.</returns>
+    /// <param name="clientId">The unique identifier of the client.</param>
+    /// <param name="pageSize">The number of secrets per page (default is 10).</param>
+    /// <param name="page">The page number to retrieve (default is 1).</param>
+    /// <returns>An <see cref="OperationResult{ClientSecretsDto}"/> containing the client secrets and pagination details.</returns>
     Task<OperationResult<ClientSecretsDto>> GetClientSecretsAsync(int clientId, int pageSize = 10, int page = 1);
 
     /// <summary>
     /// Retrieves a specific client secret by its unique identifier.
     /// </summary>
-    /// <param name="secretId">The unique identifier of the secret to retrieve.</param>
-    /// <returns>An <see cref="OperationResult{ClientSecretDto}"/> containing the requested client secret if found, or an error if it does not exist.</returns>
+    /// <param name="secretId">The unique identifier of the secret.</param>
+    /// <returns>An <see cref="OperationResult{ClientSecretDto}"/> containing the client secret details, or an error if not found.</returns>
     Task<OperationResult<ClientSecretDto>> GetClientSecretAsync(int secretId);
 
     /// <summary>
     /// Adds a new secret to a specified client.
     /// </summary>
-    /// <param name="clientId">The unique identifier of the client to which the secret will be added.</param>
-    /// <param name="clientSecretDto">The details of the client secret to add, including values and expiration.</param>
-    /// <param name="identity">The user adding the secret, represented by the current user's claims.</param>
-    /// <returns>An <see cref="OperationResult{ClientSecretDto}"/> indicating the outcome of the add operation, containing the newly added client secret if successful.</returns>
-    Task<OperationResult<ClientSecretDto>> AddClientSecretAsync(string clientId, ClientSecretDto clientSecretDto, ClaimsPrincipal identity);
+    /// <param name="clientId">The unique identifier of the client.</param>
+    /// <param name="clientSecretDto">The details of the secret to add.</param>
+    /// <param name="identity">The user performing the addition, represented by their claims.</param>
+    /// <returns>An <see cref="OperationResult{ClientSecretDto}"/> indicating the success or failure of the operation.</returns>
+    Task<OperationResult<ClientSecretDto>> AddClientSecretAsync(int clientId, ClientSecretDto clientSecretDto, ClaimsPrincipal identity);
 
     /// <summary>
     /// Removes a specific secret from a client.
     /// </summary>
-    /// <param name="clientId">The unique identifier of the client from which the secret will be removed.</param>
+    /// <param name="clientId">The unique identifier of the client.</param>
     /// <param name="secretId">The unique identifier of the secret to remove.</param>
-    /// <param name="identity">The user performing the removal, represented by the current user's claims.</param>
-    /// <returns>An <see cref="OperationResult{ClientSecretDto}"/> indicating the success or failure of the removal operation.</returns>
-    Task<OperationResult<ClientSecretDto>> RemoveClientSecretAsync(string clientId, int secretId, ClaimsPrincipal identity);
-    
+    /// <param name="identity">The user performing the removal, represented by their claims.</param>
+    /// <returns>An <see cref="OperationResult{ClientSecretDto}"/> indicating the outcome of the removal operation.</returns>
+    Task<OperationResult<ClientSecretDto>> RemoveClientSecretAsync(int clientId, int secretId, ClaimsPrincipal identity);
+
+    /// <summary>
+    /// Retrieves all grant types available in the system.
+    /// </summary>
+    /// <returns>An <see cref="OperationResult"/> containing the list of grant types.</returns>
     Task<OperationResult<List<GrantType>>> GetGrantTypesAsync();
-    
+
+    /// <summary>
+    /// Retrieves all API scopes defined in the system.
+    /// </summary>
+    /// <returns>An <see cref="OperationResult"/> containing the list of API scopes.</returns>
     Task<OperationResult<List<ApiScope>>> GetApiScopesAsync();
-    
+
+    /// <summary>
+    /// Retrieves all identity resources defined in the system.
+    /// </summary>
+    /// <returns>An <see cref="OperationResult"/> containing the list of identity resources.</returns>
     Task<OperationResult<List<IdentityResource>>> GetIdentityResourcesAsync();
 }

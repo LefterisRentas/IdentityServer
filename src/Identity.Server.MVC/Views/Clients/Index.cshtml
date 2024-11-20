@@ -67,6 +67,7 @@
                             <td class="px-4 py-3">
                                 <a href="@Url.Action("Edit", "Clients", new { clientId = client.ClientId })" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
                                 <a href="@Url.Action("Delete", "Clients", new { clientId = client.ClientId })" class="font-medium text-red-600 dark:text-red-500 hover:underline">Delete</a>
+                                <a href="@Url.Action("Secrets", "Clients", new { clientId = client.Id, clientName = client.ClientId })" class="font-medium text-yellow-600 dark:text-yellow-500 hover:underline">Secrets</a>
                             </td>
                         </tr>
                     }

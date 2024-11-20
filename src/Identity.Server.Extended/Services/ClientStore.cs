@@ -211,12 +211,12 @@ internal class ClientStore<TConfigurationDbContext>(
     /// <summary>
     /// <inheritdoc cref="IClientStore.AddClientSecretAsync"/>
     /// </summary>
-    public Task<OperationResult<ClientSecretDto>> AddClientSecretAsync(string clientId, ClientSecretDto clientSecretDto, ClaimsPrincipal identity)
+    public Task<OperationResult<ClientSecretDto>> AddClientSecretAsync(int clientId, ClientSecretDto clientSecretDto, ClaimsPrincipal identity)
     {
-        var client = _context.Clients.FirstOrDefault(x => x.ClientId == clientId);
+        var client = _context.Clients.FirstOrDefault(x => x.Id == clientId);
         if (client is null)
         {
-            return Task.FromResult(OperationResult.Failure<ClientSecretDto>(new Dictionary<string, List<string>> { { "ClientId", ["Client not found."] } }))!;
+            return Task.FromResult(OperationResult.Failure<ClientSecretDto>(new Dictionary<string, List<string>> { { "ClientId", ["Client not found."] } }));
         }
 
         var clientSecret = clientSecretDto.ToEntity(client.Id);
@@ -230,18 +230,18 @@ internal class ClientStore<TConfigurationDbContext>(
     /// <summary>
     /// <inheritdoc cref="IClientStore.RemoveClientSecretAsync"/>
     /// </summary>
-    public Task<OperationResult<ClientSecretDto>> RemoveClientSecretAsync(string clientId, int secretId, ClaimsPrincipal identity)
+    public Task<OperationResult<ClientSecretDto>> RemoveClientSecretAsync(int clientId, int secretId, ClaimsPrincipal identity)
     {
-        var client = _context.Clients.FirstOrDefault(x => x.ClientId == clientId);
+        var client = _context.Clients.FirstOrDefault(x => x.Id == clientId);
         if (client is null)
         {
-            return Task.FromResult(OperationResult.Failure<ClientSecretDto>(new Dictionary<string, List<string>> { { "ClientId", ["Client not found."] } }))!;
+            return Task.FromResult(OperationResult.Failure<ClientSecretDto>(new Dictionary<string, List<string>> { { "ClientId", ["Client not found."] } }));
         }
 
         var clientSecret = _context.ClientSecrets.FirstOrDefault(x => x.Id == secretId);
         if (clientSecret is null)
         {
-            return Task.FromResult(OperationResult.Failure<ClientSecretDto>(new Dictionary<string, List<string>> { { "SecretId", ["Client Secret not found."] } }))!;
+            return Task.FromResult(OperationResult.Failure<ClientSecretDto>(new Dictionary<string, List<string>> { { "SecretId", ["Client Secret not found."] } }));
         }
 
         _context.ClientSecrets.Remove(clientSecret);
@@ -272,6 +272,7 @@ internal class ClientStore<TConfigurationDbContext>(
     private void UpdateClientFields(Client existingClient, Client client)
     {
         existingClient.ClientName = client.ClientName;
+        existingClient.Updated = DateTime.UtcNow;
         existingClient.Description = client.Description;
         existingClient.ClientUri = client.ClientUri;
         existingClient.LogoUri = client.LogoUri;
@@ -283,6 +284,7 @@ internal class ClientStore<TConfigurationDbContext>(
         existingClient.AuthorizationCodeLifetime = client.AuthorizationCodeLifetime;
         existingClient.AbsoluteRefreshTokenLifetime = client.AbsoluteRefreshTokenLifetime;
         existingClient.SlidingRefreshTokenLifetime = client.SlidingRefreshTokenLifetime;
+        existingClient.ConsentLifetime = client.ConsentLifetime;
         existingClient.RefreshTokenExpiration = client.RefreshTokenExpiration;
         existingClient.RefreshTokenUsage = client.RefreshTokenUsage;
         existingClient.IncludeJwtId = client.IncludeJwtId;

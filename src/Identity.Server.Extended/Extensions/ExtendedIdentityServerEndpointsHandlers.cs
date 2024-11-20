@@ -38,10 +38,10 @@ public static class ExtendedIdentityServerEndpointsHandlers
         ClientsHandler.GetClientSecret(clientManager, secretId);
 
     public static Task<Results<CreatedAtRoute<ClientSecretDto>, ValidationProblem>> CreateClientSecret(
-        IClientManager clientManager, string clientId, ClientSecretDto clientSecretDto, ClaimsPrincipal claimsPrincipal) =>
+        IClientManager clientManager, int clientId, ClientSecretDto clientSecretDto, ClaimsPrincipal claimsPrincipal) =>
         ClientsHandler.CreateClientSecret(clientManager, clientId, clientSecretDto, claimsPrincipal);
 
     public static Task<Results<NoContent, ValidationProblem>> DeleteClientSecret(
-        IClientManager clientManager, string clientId, int secretId, ClaimsPrincipal claimsPrincipal) =>
+        IClientManager clientManager, int clientId, int secretId, ClaimsPrincipal claimsPrincipal) =>
         ClientsHandler.DeleteClientSecret(clientManager, clientId, secretId, claimsPrincipal);
 }

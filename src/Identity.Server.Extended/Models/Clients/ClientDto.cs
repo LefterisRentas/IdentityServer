@@ -79,7 +79,7 @@ public class ClientDto
         clientDto.RequireRequestObject = client.RequireRequestObject;
         clientDto.Id = client.Id;
 
-        clientDto.AllowedIdentityTokenSigningAlgorithms = client.AllowedIdentityTokenSigningAlgorithms != null
+        clientDto.AllowedIdentityTokenSigningAlgorithms = !string.IsNullOrWhiteSpace(client.AllowedIdentityTokenSigningAlgorithms)
             ? client.AllowedIdentityTokenSigningAlgorithms.Split(',').ToList()
             : [];
         return clientDto;
