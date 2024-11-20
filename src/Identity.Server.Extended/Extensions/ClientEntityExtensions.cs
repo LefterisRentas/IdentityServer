@@ -6,6 +6,9 @@ using ClientClaim = IdentityServer4.EntityFramework.Entities.ClientClaim;
 
 namespace Identity.Server.Extended.Extensions;
 
+/// <summary>
+/// Mapping extensions for <see cref="Client"/> and <see cref="ClientDto"/>.
+/// </summary>
 public static class ClientEntityExtensions
 {
     /// <summary>
@@ -71,11 +74,7 @@ public static class ClientEntityExtensions
             {
                 Provider = x
             }).ToList(),
-            Claims = clientDto.Claims.Select(x => new ClientClaim
-            {
-                Type = x.Type,
-                Value = x.Value
-            }).ToList(),
+            Claims = clientDto.Claims.Select(x => x.ToEntity(clientDto.Id)).ToList(),
             AllowedIdentityTokenSigningAlgorithms = string.Join(",", clientDto.AllowedIdentityTokenSigningAlgorithms),
             UserSsoLifetime = clientDto.UserSsoLifetime,
             UserCodeType = clientDto.UserCodeType,
@@ -88,11 +87,7 @@ public static class ClientEntityExtensions
             ProtocolType = clientDto.ProtocolType,
             Enabled = clientDto.Enabled,
             LastAccessed = clientDto.LastAccessed,
-            Properties = clientDto.Properties.Select(x => new ClientProperty
-            {
-                Key = x.Key,
-                Value = x.Value
-            }).ToList(),
+            Properties = clientDto.Properties.Select(x => x.ToEntity(clientDto.Id)).ToList(),
             Updated = clientDto.Updated,
             Id = clientDto.Id
         };

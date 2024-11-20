@@ -9,7 +9,7 @@ namespace Identity.Server.Extended.Endpoints.Handlers;
 
 internal static class ClientsHandler
 {
-    internal static async Task<Results<Ok<List<ClientDto>>, NotFound>> GetClients(IClientManager clientManager, string search, int page = 1, int pageSize = 10)
+    internal static async Task<Results<Ok<ClientsDto>, NotFound>> GetClients(IClientManager clientManager, string? search, int page = 1, int pageSize = 10)
     {
         var result = await clientManager.GetClientsAsync(search, page, pageSize);
         if (result.IsSuccess is false || result.Result is null)
@@ -17,7 +17,7 @@ internal static class ClientsHandler
             return  TypedResults.NotFound();
         }
 
-        return TypedResults.Ok(result.Result.Select(ClientDto.FromEntity).ToList());
+        return TypedResults.Ok(result.Result);
     }
     
     internal static async Task<Results<Ok<ClientDto>, NotFound>> GetClientById(IClientManager clientManager, string clientId)
@@ -86,7 +86,7 @@ internal static class ClientsHandler
         return TypedResults.Ok(result.Result);
     }
     
-    internal static async Task<Results<CreatedAtRoute<ClientSecretDto>, ValidationProblem>> CreateClientSecret(IClientManager clientManager, string clientId, ClientSecretDto clientSecretDto, ClaimsPrincipal claimsPrincipal)
+    internal static async Task<Results<CreatedAtRoute<ClientSecretDto>, ValidationProblem>> CreateClientSecret(IClientManager clientManager, int clientId, ClientSecretDto clientSecretDto, ClaimsPrincipal claimsPrincipal)
     {
         var result = await clientManager.AddClientSecretAsync(clientId, clientSecretDto, claimsPrincipal);
         if (result.IsSuccess is false && result.ValidationErrors.Count > 0 || result.Result is null)
@@ -96,7 +96,7 @@ internal static class ClientsHandler
         return TypedResults.CreatedAtRoute(result.Result, nameof(GetClientSecret), new { secretId = result.Result.Id });
     }
     
-    internal static async Task<Results<NoContent, ValidationProblem>> DeleteClientSecret(IClientManager clientManager, string cliendId, int secretId, ClaimsPrincipal claimsPrincipal)
+    internal static async Task<Results<NoContent, ValidationProblem>> DeleteClientSecret(IClientManager clientManager, int cliendId, int secretId, ClaimsPrincipal claimsPrincipal)
     {
         var result = await clientManager.RemoveClientSecretAsync(cliendId, secretId, claimsPrincipal);
         if (result.IsSuccess is false && result.ValidationErrors.Count > 0)

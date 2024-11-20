@@ -12,12 +12,19 @@ using Serilog;
 using Identity.Server.MVC.Configuration;
 using Identity.Server.MVC.Data.Seeding;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.ResponseCompression;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.AddIdentityServerConfig();
 builder.AddDiConfig();
 builder.AddExtendedIdentityServerDiConfig();
 builder.AddExtendedIdentityServerAuthorizationConfig();
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+    options.Providers.Add<BrotliCompressionProvider>();
+    options.Providers.Add<GzipCompressionProvider>();
+});
 
 if (builder.Environment.IsDevelopment())
 {
@@ -30,13 +37,13 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
     app.UseMigrationsEndPoint();
 }
-
+app.UseResponseCompression();
 app.UseStaticFiles();
 
 app.UseRouting();
 app.Use(async (context, next) =>
 {
-    context.Response.Headers.TryAdd("Content-Security-Policy", "img-src 'self' data:;");
+    context.Response.Headers.TryAdd("Content-Security-Policy", "img-src 'self' https: data:;");
     await next();
 });
 app.UseIdentityServer();
