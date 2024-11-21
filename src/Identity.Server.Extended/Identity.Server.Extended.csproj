@@ -9,6 +9,8 @@
     <ItemGroup>
         <PackageReference Include="AutoMapper" Version="13.0.1" />
         <PackageReference Include="Cnblogs.IdentityServer4.EntityFramework.Storage" Version="4.2.1" />
+        <PackageReference Include="Duende.IdentityModel" Version="7.0.0" />
+        <PackageReference Include="IdentityModel" Version="7.0.0" />
         <PackageReference Include="IdentityServer4.AspNetIdentity" Version="4.1.2" />
         <PackageReference Include="IdentityServer4.EntityFramework" Version="4.1.2" />
         <PackageReference Include="IdentityModel.AspNetCore.OAuth2Introspection" Version="6.2.0"/>
@@ -19,9 +21,10 @@
         <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="6.7.0" />
         <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.7.0" />
         <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.7.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.7" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.11" />
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.6"/>
         <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="8.0.7" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
     </ItemGroup>
     <ItemGroup>
       <Compile Remove="Configuration\AuthorizationConfig.cs" />

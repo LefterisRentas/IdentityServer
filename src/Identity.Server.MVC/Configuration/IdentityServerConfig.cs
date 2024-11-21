@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using Identity.Server.Extended.Configuration;
 using Identity.Server.Extended.Data;
 using Identity.Server.MVC.Data;
 using Identity.Server.MVC.Models;
@@ -63,7 +64,16 @@ public static class IdentityServerConfig
         // not recommended for production - you need to store your key material somewhere secure
         AddDeveloperSigningCredential(identityServerBuilder);
         builder.Services.CleanCookieConfig();
+        builder.AddExtendedIdentityServerAuthenticationConfig();
         builder.Services.AddAuthentication()
+            .AddMicrosoftAccount(options =>
+            {
+                options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+
+                // register your Identity.Server.MVC with Microsoft at https://apps.dev.microsoft.com
+                options.ClientId = builder.Configuration.GetValue<string>("Microsoft:ClientId") ?? string.Empty;
+                options.ClientSecret = builder.Configuration.GetValue<string>("Microsoft:ClientSecret") ?? string.Empty;
+            })
             .AddGoogle(options =>
             {
                 options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
