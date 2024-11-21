@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using Identity.Server.Extended.Configuration;
 using Identity.Server.Extended.Endpoints;
+using Identity.Server.Extended.Middleware;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -15,10 +16,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.ResponseCompression;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.AddIdentityServerConfig();
 builder.AddDiConfig();
 builder.AddExtendedIdentityServerDiConfig();
 builder.AddExtendedIdentityServerAuthorizationConfig();
+builder.AddIdentityServerConfig();
 builder.Services.AddResponseCompression(options =>
 {
     options.EnableForHttps = true;
@@ -41,36 +42,45 @@ app.UseResponseCompression();
 app.UseStaticFiles();
 
 app.UseRouting();
+// Security headers
 app.Use(async (context, next) =>
 {
     context.Response.Headers.TryAdd("Content-Security-Policy", "img-src 'self' https: data:;");
     await next();
 });
-app.UseIdentityServer();
-app.UseAuthorization();
-app.MapDefaultControllerRoute();
-app.InitializeResourcesDatabase();
-var seed = app.Services.GetService<IConfiguration>()?.GetValue<bool>("ShouldSeedDatabase") ?? false;
-if (seed)
-{
-    Log.Information("Seeding database...");
-    var config = app.Services.GetRequiredService<IConfiguration>();
-    var connectionString = config.GetConnectionString("DefaultConnection");
-    await SeedData.EnsureSeedData(connectionString ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found."));
-    Log.Information("Done seeding database.");
-}
-app.MapSwagger();
+
+// Authentication and Authorization
+app.UseMiddleware<MultiSchemeAuthenticationMiddleware>();
+app.UseIdentityServer(); // IdentityServer handles token validation and issuance
+app.UseAuthorization(); // Handle authorization based on authenticated user
+
+// Routes
+app.MapDefaultControllerRoute(); // Map default routes for MVC
+app.MapSwagger(); // Enable Swagger UI and documentation
 app.UseSwaggerUI(options =>
 {
     options.RoutePrefix = "docs";
-    options.DocumentTitle = $"API Documentation";
-    options.SwaggerEndpoint($"/swagger/identity/swagger.json", "Identity Server");
+    options.DocumentTitle = "API Documentation";
+    options.SwaggerEndpoint("/swagger/identity/swagger.json", "Identity Server");
 });
+
 app.MapApiResourcesManagement();
 app.MapClientsManagement();
 app.MapIdentityResourcesManagement();
 app.MapRolesManagement();
 app.MapScopesManagement();
 app.MapUsersManagement();
+
+var seed = app.Services.GetService<IConfiguration>()?.GetValue<bool>("ShouldSeedDatabase") ?? false;
+if (seed)
+{
+    Log.Information("Seeding database...");
+    app.InitializeResourcesDatabase();
+    var config = app.Services.GetRequiredService<IConfiguration>();
+    var connectionString = config.GetConnectionString("DefaultConnection");
+    await SeedData.EnsureSeedData(connectionString ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found."));
+    Log.Information("Done seeding database.");
+}
+
 Log.Information("Starting host...");
 app.Run();
