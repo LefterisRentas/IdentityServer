@@ -281,6 +281,7 @@ internal class ClientStore<TConfigurationDbContext>(
         existingClient.AllowRememberConsent = client.AllowRememberConsent;
         existingClient.IdentityTokenLifetime = client.IdentityTokenLifetime;
         existingClient.AccessTokenLifetime = client.AccessTokenLifetime;
+        existingClient.AccessTokenType = client.AccessTokenType;
         existingClient.AuthorizationCodeLifetime = client.AuthorizationCodeLifetime;
         existingClient.AbsoluteRefreshTokenLifetime = client.AbsoluteRefreshTokenLifetime;
         existingClient.SlidingRefreshTokenLifetime = client.SlidingRefreshTokenLifetime;
