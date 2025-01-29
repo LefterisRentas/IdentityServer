@@ -105,7 +105,8 @@ public class TwoFactorController : Controller
         }
 
         var provider = user.TwoFactorProvider == TwoFactorProviders.Phone ? "Phone" : "Email";
-        _logger.LogInformation($"Provider: {provider}, Code: {model.Code}, User: {user.UserName}");
+        var sanitizedCode = model.Code.Replace(Environment.NewLine, "").Replace("\n", "").Replace("\r", "");
+        _logger.LogInformation($"Provider: {provider}, Code: {sanitizedCode}, User: {user.UserName}");
 
         // Verify the code
         var result = await _signInManager.TwoFactorSignInAsync(provider, model.Code, model.RememberMe, model.RememberBrowser);
