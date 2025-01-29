@@ -1,5 +1,7 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using System;
+using System.Web;
 
 
 using System;
@@ -24,6 +26,15 @@ using Microsoft.Extensions.Logging;
 
 namespace Identity.Server.MVC.Controllers.Account;
 
+public bool IsValidReturnUrl(string returnUrl)
+{
+    var url = new Uri(returnUrl, UriKind.RelativeOrAbsolute);
+    if (!url.IsAbsoluteUri)
+    {
+        return true;
+    }
+    return url.Host == "example.org"; // Replace with your known good host
+}
 [Route("account")]
 [SecurityHeaders]
 [AllowAnonymous]
@@ -111,7 +122,12 @@ public class AccountController : Controller
                 return this.LoadingPage("Redirect", model.ReturnUrl ?? string.Empty);
             }
 
-            return Redirect(model.ReturnUrl ?? string.Empty);
+            var returnUrl = model.ReturnUrl ?? string.Empty;
+            if (IsValidReturnUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+            return Redirect("~/");
             // since we don't have a valid context, then we just go back to the home page
         }
 
