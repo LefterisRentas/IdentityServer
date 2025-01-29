@@ -93,7 +93,7 @@ public class AccountController : Controller
         var context = await _interaction.GetAuthorizationContextAsync(model.ReturnUrl);
 
         // the user clicked the "cancel" button
-        if (button != "login")
+        if (button == "cancel")
         {
             if (context == null) return Redirect("~/");
             // if the user cancels, send a result back into Identity.Server.MVC as if they 
@@ -110,7 +110,12 @@ public class AccountController : Controller
             }
 
             return Redirect(model.ReturnUrl ?? string.Empty);
-            // since we don't have a valid context, then we just go back to the home page
+        }
+        else if (button != "login")
+        {
+            // handle unexpected button values
+            _logger.LogWarning("Unexpected button value: {Button}", button);
+            return Redirect("~/");
         }
 
         if (ModelState.IsValid)
