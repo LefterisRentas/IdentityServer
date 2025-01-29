@@ -15,7 +15,9 @@ public class MockSmsService : ISmsService
     
     public Task SendSmsAsync(string phoneNumber, string message)
     {
-        _logger.LogInformation($"Sending SMS to {phoneNumber} with message: {message}");
+        var sanitizedPhoneNumber = phoneNumber.Replace(Environment.NewLine, "").Replace("\n", "").Replace("\r", "");
+        var sanitizedMessage = message.Replace(Environment.NewLine, "").Replace("\n", "").Replace("\r", "");
+        _logger.LogInformation($"Sending SMS to {sanitizedPhoneNumber} with message: {sanitizedMessage}");
         return Task.CompletedTask;
     }
 }
