@@ -78,7 +78,7 @@
                                asp-controller="External"
                                asp-action="Challenge"
                                asp-route-scheme="@provider.AuthenticationScheme"
-                               asp-route-returnUrl="@Model.ReturnUrl">
+                               asp-route-returnUrl="@Html.Raw(Model.ReturnUrl)">
                                 <i class="@iconClass mr-2"></i> @provider.DisplayName
                             </a>
                         </li>

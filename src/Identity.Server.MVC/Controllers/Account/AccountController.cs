@@ -362,7 +362,7 @@ public class AccountController : Controller
         {
             AllowRememberLogin = AccountOptions.AllowRememberLogin,
             EnableLocalLogin = allowLocal && AccountOptions.AllowLocalLogin,
-            ReturnUrl = returnUrl,
+            ReturnUrl = System.Net.WebUtility.HtmlEncode(returnUrl),
             Username = context?.LoginHint ?? string.Empty,
             ExternalProviders = providers.ToArray()
         };
