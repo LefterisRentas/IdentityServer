@@ -69,6 +69,8 @@ public class AccountController : Controller
     [Route("login")]
     public async Task<IActionResult> Login(string returnUrl)
     {
+        // Encode the returnUrl to prevent XSS
+        returnUrl = System.Net.WebUtility.HtmlEncode(returnUrl);
         // build a model so we know what to show on the login page
         var vm = await BuildLoginViewModelAsync(returnUrl);
 
